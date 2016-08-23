@@ -1,0 +1,3 @@
+https://www.gnu.org/software/libc/manual/html_node/Executing-a-File.html
+https://www.gnu.org/software/libc/manual/html_node/Working-Directory.html
+https://cnswww.cns.cwru.edu/php/chet/readline/readline.html
