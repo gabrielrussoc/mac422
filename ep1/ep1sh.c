@@ -30,6 +30,7 @@ int main (int argc, char **argv) {
         getcwd (path, MAX);
         sprintf (prompt, "(%s): ", path);
         input = readline (prompt);
+        add_history (input);
 
         i = 0;
         p = strtok (input, " ");
