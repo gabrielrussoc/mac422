@@ -1,4 +1,4 @@
-CC=gcc-6
+CC=gcc
 CFLAGS=-Wall -ansi -O2 -pedantic
 
 all: ep1sh
