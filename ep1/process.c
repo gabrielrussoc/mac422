@@ -1,8 +1,7 @@
 #include "process.h"
-#include <stdio.h>
 #include <stdlib.h>
 
-Process create_process (double t0, string name, double dt, double deadline) {
+Process process_create (double t0, string name, double dt, double deadline) {
     Process p = malloc (sizeof (process));
 
     p->t0 = t0;
@@ -13,16 +12,16 @@ Process create_process (double t0, string name, double dt, double deadline) {
     return p;
 }
 
-void destroy_process (Process p) {
+void process_destroy (Process p) {
     free (p->name);
     free (p);
 }
 
-Process read_process (FILE* in) {
+Process process_read (FILE *in) {
     double t0, dt, deadline;
-    string str = malloc (100 * sizeof (string));
+    string str = malloc (100 * sizeof (char));
 
-    if (fscanf (in, "%ld %s %ld %ld", &t0, str, dt, deadline) != EOF)
+    if (fscanf (in, "%lf %s %lf %lf", &t0, str, &dt, &deadline) != EOF)
         return process_create (t0, str, dt, deadline);
 
     return NULL;
