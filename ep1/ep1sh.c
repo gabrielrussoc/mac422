@@ -9,13 +9,14 @@
 
 #define MAX 1024
 #define TRUE 1
+#define FALSE 0
 
 int main (int argc, char **argv) {
     char prompt[MAX], *input, *path;
     char *params[MAX], *command, *p;
-    int status, i;
+    int status, i, go = TRUE;
     
-    while (TRUE) {
+    while (go == TRUE) {
         /* Exibe o prompt e le o input do usuario */
         path = getcwd (NULL, 0);
         sprintf (prompt, "(%s): ", path);
@@ -35,9 +36,7 @@ int main (int argc, char **argv) {
         /* Processa o input */
         if (command != NULL) {
             if (strcmp (command, "exit") == 0) {
-                free (input);
-                free (path);
-                exit (EXIT_SUCCESS);
+                go = FALSE;
             } else if (strcmp (command, "chmod") == 0) {
                 chmod (params[2], strtol (params[1], NULL, 8));
             } else if (strcmp (command, "id") == 0) {
