@@ -38,7 +38,8 @@ int main (int argc, char **argv) {
             if (strcmp (command, "exit") == 0) {
                 go = FALSE;
             } else if (strcmp (command, "chmod") == 0) {
-                chmod (params[2], strtol (params[1], NULL, 8));
+                status = chmod (params[2], strtol (params[1], NULL, 8));
+                if (status) perror ("Error");
             } else if (strcmp (command, "id") == 0) {
                 if (strcmp (params[1], "-u") == 0) printf ("%d\n", getuid ());
             } else {
