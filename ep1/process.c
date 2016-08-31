@@ -1,5 +1,6 @@
 #include "process.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 Process create_process (double t0, string name, double dt, double deadline) {
     Process p = malloc (sizeof (process));
@@ -15,6 +16,16 @@ Process create_process (double t0, string name, double dt, double deadline) {
 void destroy_process (Process p) {
     free (p->name);
     free (p);
+}
+
+Process read_process (FILE* in) {
+    double t0, dt, deadline;
+    string str = malloc (100 * sizeof (string));
+
+    if (fscanf (in, "%ld %s %ld %ld", &t0, str, dt, deadline) != EOF)
+        return process_create (t0, str, dt, deadline);
+
+    return NULL;
 }
 
 /* Test Client 
