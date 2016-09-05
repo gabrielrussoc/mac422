@@ -1,4 +1,5 @@
 #include "process.h"
+#include <pthread.h>
 #include <stdlib.h>
 
 Process process_create (double t0, string name, double dt, double deadline) {
@@ -8,6 +9,9 @@ Process process_create (double t0, string name, double dt, double deadline) {
     p->name = name;
     p->dt = dt;
     p->deadline = deadline;
+    p->paused = 1;
+    p->running = 0.;
+    pthread_cond_init (&(p->cond), NULL);
 
     return p;
 }

@@ -2,6 +2,7 @@
 #define _PROCESS_H
 
 #include <stdio.h>
+#include <pthread.h>
 
 /* Biblioteca dos processos */
 
@@ -12,6 +13,9 @@ typedef struct {
     string name;
     double dt;
     double deadline;
+    int paused;
+    pthread_cond_t cond;
+    double running;
 } process;
 
 typedef process* Process;
