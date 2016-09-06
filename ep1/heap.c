@@ -29,20 +29,19 @@ void heap_insert (Heap h, Process p) {
 }
 
 Process heap_getMin (Heap h) {
-    if (is_empty (h)) return NULL;
+    if (heap_isempty (h)) return NULL;
     return h->v[1];
 }
 
 void heap_deleteMin (Heap h) {
-    if (is_empty (h)) return;
-    /* Faz isso? destroy_process (h->v[1]);*/
+    if (heap_isempty (h)) return;
     h->v[1] = h->v[h->size];
     h->size--;
     if (h->size < 1/4 * MAX) reallocMem (h->v, MAX/2);
     siftDown (h);
 }
 
-int is_empty (Heap h) {
+int heap_isempty (Heap h) {
     return h->size == 0;
 }
 

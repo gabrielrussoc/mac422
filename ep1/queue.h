@@ -29,7 +29,7 @@ void dequeue (Queue q);
 void *queue_front (Queue q);
 
 /* Devolve 1 se a fila q esta vazia ou 0 caso contraio */
-int is_empty (Queue q);
+int queue_isempty (Queue q);
 
 #endif
 

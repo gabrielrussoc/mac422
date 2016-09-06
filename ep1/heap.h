@@ -20,7 +20,7 @@ Process heap_getMin (Heap h);
 
 void heap_deleteMin (Heap h);
 
-int is_empty (Heap h);
+int heap_isempty (Heap h);
 
 
 #endif 

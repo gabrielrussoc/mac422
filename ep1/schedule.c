@@ -40,7 +40,7 @@ static void thread_check (Process p) {
 static void next_fcfs () {
     Process p;
     pthread_mutex_lock (&queue_lock);
-    if (n_thread < n_cpu && !is_empty (q)) {
+    if (n_thread < n_cpu && !queue_isempty (q)) {
         p = queue_front(q);
         printf ("Rodei %s com %lf\n", p->name, elapsed());
         thread_wake (queue_front (q));
