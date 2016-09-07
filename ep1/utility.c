@@ -44,6 +44,21 @@ double thread_check (Process p) {
     return t - s;
 }
 
+void mutex_init () {
+   pthread_mutex_init (&g_tlock, NULL);
+    pthread_mutex_init (&g_slock, NULL);
+    if (g_debug) {
+        pthread_mutex_init (&g_dlock, NULL);
+        g_line = 0;
+    }
+}
+
+void mutex_destroy () {
+    pthread_mutex_destroy (&g_tlock);
+    pthread_mutex_destroy (&g_slock);
+    if (g_debug) pthread_mutex_destroy (&g_dlock);
+}
+
 double elapsed () {
     return (double) clock () / CLOCKS_PER_SEC;
 }

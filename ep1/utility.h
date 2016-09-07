@@ -37,6 +37,12 @@ void thread_sleep (Process p);
  * Devolve o tempo que a thread ficou travada. */
 double thread_check (Process p);
 
+/* Inicializa os mutex que serao utilizados */
+void mutex_init ();
+
+/* Libera os mutex que foram utilizados */
+void mutex_destroy ();
+
 /* Devolve a quantidade de segundos desde o inicio do programa */
 double elapsed ();
 

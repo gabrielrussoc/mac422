@@ -9,7 +9,6 @@
 /* TODO 
  * Checar memoria
  * Escalonador multiplas filas
- * Destruir mutex na utility
  * */
 
 /* Escolhe a proxima thread a ser executada no algoritmo FCFS */
@@ -68,32 +67,14 @@ void *do_something (void *a) {
 /* Escalonador FCFS ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////// */
 
-static void next_fcfs () {
-    Process p;
-    pthread_mutex_lock (&g_slock);
-    if (g_thread < g_cpu && !queue_isempty (g_queue)) {
-        p = queue_front (g_queue);
-        if (g_debug) fprintf (stderr, "[%.3lf] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
-        thread_wake (p);
-        dequeue (g_queue);
-        g_thread++;
-    } 
-    pthread_mutex_unlock (&g_slock);
-}
-
 void fcfs () {
     Process next;
     int i = 0;
     pthread_t tid[MAX];
 
     g_queue = queue_create ();
-    pthread_mutex_init (&g_tlock, NULL);
-    pthread_mutex_init (&g_slock, NULL);
-    if (g_debug) {
-        pthread_mutex_init (&g_dlock, NULL);
-        g_line = 0;
-    }
-    /*g_cpu = sysconf(_SC_NPROCESSORS_ONLN);*/
+    mutex_init ();
+   /*g_cpu = sysconf(_SC_NPROCESSORS_ONLN);*/
     g_cpu = 1;
     g_thread = 0;
 
@@ -112,13 +93,25 @@ void fcfs () {
 
     while (i) pthread_join(tid[--i], NULL);
     queue_destroy (g_queue);
-    pthread_mutex_destroy (&g_tlock);
-    pthread_mutex_destroy (&g_slock);
-    if (g_debug) pthread_mutex_destroy (&g_dlock);
+    mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3lf] %d mudanças de contexto\n", elapsed (), g_context);
     fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
+
+static void next_fcfs () {
+    Process p;
+    pthread_mutex_lock (&g_slock);
+    if (g_thread < g_cpu && !queue_isempty (g_queue)) {
+        p = queue_front (g_queue);
+        if (g_debug) fprintf (stderr, "[%.3lf] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+        thread_wake (p);
+        dequeue (g_queue);
+        g_thread++;
+    } 
+    pthread_mutex_unlock (&g_slock);
+}
+
 
 /* Escalonador SRTN ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////// */
@@ -129,12 +122,7 @@ void srtn () {
     pthread_t tid[MAX];
 
     g_heap = heap_create ();
-    pthread_mutex_init (&g_tlock, NULL);
-    pthread_mutex_init (&g_slock, NULL);
-    if (g_debug) {
-        pthread_mutex_init (&g_dlock, NULL);
-        g_line = 0;
-    }
+    mutex_init ();
     /*g_cpu = sysconf(_SC_NPROCESSORS_ONLN);*/
     g_cpu = 1;
     g_thread = 0;
@@ -154,9 +142,7 @@ void srtn () {
 
     while (i) pthread_join(tid[--i], NULL);
     heap_destroy (g_heap);
-    pthread_mutex_destroy (&g_tlock);
-    pthread_mutex_destroy (&g_slock);
-    if (g_debug) pthread_mutex_destroy (&g_dlock);
+    mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3lf] %d mudanças de contexto\n", elapsed (), g_context);
     fprintf (g_out, "%d mudanças de contexto\n", g_context);
