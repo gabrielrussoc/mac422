@@ -25,6 +25,7 @@ extern int g_debug;
 extern int g_context;
 extern int g_line;
 extern Process g_cpu_process;
+extern int g_scheduler;
 
 /* Resume a thread atrelada ao processo p */
 void thread_wake (Process p);

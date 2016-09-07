@@ -16,6 +16,7 @@ int g_debug;
 int g_context;
 int g_line;
 Process g_cpu_process;
+int g_scheduler;
 
 void thread_wake (Process p) {
     pthread_mutex_lock (&g_tlock);
