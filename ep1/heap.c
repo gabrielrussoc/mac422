@@ -1,7 +1,7 @@
 #include "heap.h"
 #include <stdlib.h>
 
-static int MAX = 2;
+static int N = 2;
 
 /* Static Functions */
 static void reallocMem (Process *v, int size);
@@ -11,7 +11,7 @@ static void siftDown (Heap h);
 Heap heap_create () {
     Heap h = malloc (sizeof (heap));
     h->size = 0;
-    h->v = malloc (MAX * sizeof (h->v)); 
+    h->v = malloc (N * sizeof (h->v)); 
 
     return h;
 }
@@ -23,7 +23,7 @@ void heap_destroy (Heap h) {
 
 void heap_insert (Heap h, Process p) {
     h->size++;
-    if (h->size == MAX) reallocMem (h->v, MAX*2);
+    if (h->size == N) reallocMem (h->v, N*2);
     h->v[h->size] = p;
     siftUp (h);
 }
@@ -37,7 +37,7 @@ void heap_deleteMin (Heap h) {
     if (heap_isempty (h)) return;
     h->v[1] = h->v[h->size];
     h->size--;
-    if (h->size < 1/4 * MAX) reallocMem (h->v, MAX/2);
+    if (h->size < 1/4 * N) reallocMem (h->v, N/2);
     siftDown (h);
 }
 
@@ -46,8 +46,8 @@ int heap_isempty (Heap h) {
 }
 
 static void reallocMem (Process *v, int size) {
-    MAX = size;
-    realloc (v, MAX);
+    N = size;
+    realloc (v, N);
 }
 
 static void siftUp (Heap h) {

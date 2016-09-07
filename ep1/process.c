@@ -23,7 +23,7 @@ void process_destroy (Process p) {
 
 Process process_read (FILE *in) {
     double t0, dt, deadline;
-    string str = malloc (100 * sizeof (char));
+    string str = malloc (MAX * sizeof (char));
 
     if (fscanf (in, "%lf %s %lf %lf", &t0, str, &dt, &deadline) != EOF)
         return process_create (t0, str, dt, deadline);
