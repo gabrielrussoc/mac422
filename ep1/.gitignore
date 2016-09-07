@@ -10,3 +10,5 @@ Thumbs.db
 *.swo
 ep1sh
 ep1
+*.o
+out

@@ -21,6 +21,7 @@ extern Heap g_heap;
 extern int g_cpu;
 extern int g_thread;
 extern int g_debug;
+extern int g_context;
 
 /* Resume a thread atrelada ao processo p */
 void thread_wake (Process p);
@@ -28,8 +29,9 @@ void thread_wake (Process p);
 /* Para a thread atrelada ao processo p */
 void thread_sleep (Process p);
 
-/* Trava a thread do processo p caso esta esteja pausada ou nao faz nada */
-void thread_check (Process p);
+/* Trava a thread do processo p caso esta esteja pausada ou nao faz nada.
+ * Devolve o tempo que a thread ficou travada. */
+double thread_check (Process p);
 
 /* Devolve a quantidade de segundos desde o inicio do programa */
 double elapsed ();
