@@ -6,10 +6,9 @@
 #include <unistd.h>
 #include <pthread.h>
 
-/* TODO next_process precisa funcionar na do_something para todos os schedulers 
+/* TODO 
  * Checar memoria
  * Escalonador multiplas filas
- * Fechar os arquivos
  * */
 
 /* Escolhe a proxima thread a ser executada no algoritmo FCFS */
@@ -17,6 +16,24 @@ static void next_fcfs ();
 
 /* Escolhe a proxima thread a ser executada no algoritmo SRTN */
 static void next_srtn ();
+
+/* Escolhe a proxima thread a ser executada com base no algoritmo
+ * de escalonamento que está rodando (g_scheduler) */
+static void next_process ();
+
+static void next_process () {
+    switch (g_scheduler) {
+        case 1:
+            next_fcfs ();
+            break;
+        case 2:
+            next_srtn ();
+            break;
+        case 3:
+            /* next_multiple_queue () */
+            break;
+    }
+}
 
 void *do_something (void *a) {
     Process p = a;
