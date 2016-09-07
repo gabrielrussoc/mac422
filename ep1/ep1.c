@@ -20,6 +20,9 @@ int main (int argc, char **argv) {
         case 1:
             fcfs ();
             break;
+        case 2:
+            srtn ();
+            break;
         default:
             fprintf (stderr, "Esse nao e um escalonador valido\n");
             break;

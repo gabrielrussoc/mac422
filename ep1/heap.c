@@ -54,7 +54,7 @@ static void siftUp (Heap h) {
     int f = h->size, p = f / 2;
     Process t = h->v[f];
     while (p >= 1) {
-        if (t->dt > h->v[p]->dt) break;
+        if (remaining (t) > remaining (h->v[p])) break;
         h->v[f] = h->v[p];
         f = p;
         p = f / 2;
@@ -67,8 +67,8 @@ static void siftDown (Heap h) {
     int p = 1, f = 2;
     Process t = h->v[1];
     while (f <= h->size) {
-        if (f < h->size && h->v[f]->dt > h->v[f+1]->dt) f++;
-        if (t->dt < h->v[f]->dt) break;
+        if (f < h->size && remaining (h->v[f]) > remaining (h->v[f+1])) f++;
+        if (remaining (t) < remaining (h->v[f])) break;
         h->v[p] = h->v[f];
         p = f; f = 2*p;
     }
