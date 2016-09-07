@@ -1,16 +1,15 @@
 #include "heap.h"
+#include "utility.h"
 #include <stdlib.h>
 
 /* Static Functions */
-static void reallocMem (Heap h, int size);
 static void siftUp (Heap h);
 static void siftDown (Heap h);
 
 Heap heap_create () {
     Heap h = malloc (sizeof (heap));
     h->size = 0;
-    h->N = 2;
-    h->v = malloc (h->N * sizeof (h->v)); 
+    h->v = malloc (MAX * sizeof (h->v)); 
 
     return h;
 }
@@ -22,7 +21,6 @@ void heap_destroy (Heap h) {
 
 void heap_insert (Heap h, Process p) {
     h->size++;
-    if (h->size == h->N) reallocMem (h, h->N * 2);
     h->v[h->size] = p;
     siftUp (h);
 }
@@ -36,17 +34,11 @@ void heap_deleteMin (Heap h) {
     if (heap_isempty (h)) return;
     h->v[1] = h->v[h->size];
     h->size--;
-    if (h->size < 1/4 * h->N) reallocMem (h, h->N / 2);
     siftDown (h);
 }
 
 int heap_isempty (Heap h) {
     return h->size == 0;
-}
-
-static void reallocMem (Heap h, int size) {
-    h->N = size;
-    realloc (h->v, size);
 }
 
 static void siftUp (Heap h) {
