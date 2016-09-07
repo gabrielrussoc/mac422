@@ -5,9 +5,6 @@
 #include <unistd.h>
 #include <pthread.h>
 
-/* Para fins de comparacao de doubles */
-static double EPS = 1e-9;
-
 /* Variaveis globais */
 pthread_mutex_t thread_lock;    
 pthread_mutex_t queue_lock;
@@ -24,7 +21,7 @@ void thread_wake (Process p) {
 
 void thread_sleep (Process p) {
     pthread_mutex_lock (&thread_lock);
-    p->paused = 0;
+    p->paused = 1;
     pthread_mutex_unlock (&thread_lock);
 }
 
@@ -41,7 +38,7 @@ static void next_fcfs () {
     Process p;
     pthread_mutex_lock (&queue_lock);
     if (n_thread < n_cpu && !queue_isempty (q)) {
-        p = queue_front(q);
+        p = queue_front (q);
         printf ("Rodei %s com %lf\n", p->name, elapsed());
         thread_wake (queue_front (q));
         dequeue (q);
@@ -56,10 +53,10 @@ void *do_something (void *a) {
     double aux, start, idle;
     start = elapsed ();
     idle = 0;
-    while (p->running < p->dt + EPS) {
+    while (p->running < p->dt) {
         aux = elapsed ();
         thread_check (p);
-        idle += elapsed () - aux;
+        idle += elapsed () - aux; 
         foo = foo * 1;
         p->running = elapsed () - start - idle;
     }
@@ -88,7 +85,7 @@ void fcfs (FILE *in) {
 
     next = process_read (in);
     while (next != NULL) { 
-        if (next->t0 < elapsed () + EPS) {
+        if (next->t0 <= elapsed ()) {
             printf ("Chegou %s em %lf\n", next->name, elapsed ());
             pthread_create (&tid[i++], NULL, do_something, next);
             pthread_mutex_lock (&queue_lock);
