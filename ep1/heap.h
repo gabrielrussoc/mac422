@@ -6,6 +6,7 @@
 typedef struct {
     Process *v;
     int size;
+    int N;
 } heap;
 
 typedef heap* Heap;

@@ -14,7 +14,7 @@ int main (int argc, char **argv) {
     g_out = fopen (argv[3], "w");
 
     if (argc == 5 && argv[4][0] == 'd') g_debug = 1;
-    switch (scheduler) {
+    switch (g_scheduler) {
         case 1:
             fcfs ();
             break;

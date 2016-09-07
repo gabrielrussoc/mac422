@@ -59,7 +59,7 @@ void *do_something (void *a) {
     g_thread--;
     pthread_mutex_unlock (&g_slock);
     
-    next_srtn ();
+    next_process ();
     pthread_exit (NULL);
 }
 
