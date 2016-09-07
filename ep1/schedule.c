@@ -90,6 +90,62 @@ void fcfs () {
 
 /* Escalonador SRTN ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////// */
+//
+
+void srtn () {
+    Process next;
+    int i = 0;
+    pthread_t tid[MAX];
+
+    g_heap = heap_create ();
+    pthread_mutex_init (&g_tlock, NULL);
+    pthread_mutex_init (&g_slock, NULL);
+    if (g_debug) {
+        pthread_mutex_init (&g_dlock, NULL);
+        g_line = 0;
+    }
+    next = process_read (g_in);
+    while (next != NULL) { 
+        if (next->t0 <= elapsed ()) {
+            if (g_debug) fprintf (stderr, "Novo processo: %s (lido da linha %d)\n", next->name, i);
+            pthread_create (&tid[i++], NULL, do_something, next);
+            pthread_mutex_lock (&g_slock);
+            heap_insert (g_heap, next);
+            pthread_mutex_unlock (&g_slock);
+            next = process_read (g_in);
+        }
+        next_srtn ();
+    }
+
+    while (i) pthread_join(tid[--i], NULL);
+
+    if (g_debug) fprintf (g_out, "%d mudanças de contexto\n", g_context);
+}
+
+static void next_strn () {
+    Process p, q;
+    pthread_mutex_lock (&g_slock);
+    if (g_thread < g_cpu && !heap_isempty (g_heap)) {
+        g_thread++;
+        p = heap_getMin (g_heap);
+        thread_wake (p);
+        g_cpu_process = p;
+        heap_deleteMin (g_heap);
+    }
+    else if (!heap_isempty (g_heap)) {
+        p = heap_getMin (g_heap);
+        q = g_cpu_process;
+        if (remaining (p) < remaining (q)) {
+            thread_sleep (q);
+            thread_wake (p);
+            g_cpu_process = p;
+            heap_deleteMin (g_heap);
+            heap_insert (q);
+            g_context++;
+        }
+    }
+    pthread_mutex_lock (&g_slock);
+}
 
 /* Escalonador Multiplas Filas  ////////////////////////////////
 ///////////////////////////////////////////////////////////// */

@@ -31,6 +31,10 @@ Process process_read (FILE *in) {
     return NULL;
 }
 
+double process_remaining (Process p) {
+    return p->dt - p->running;
+}
+
 /* Test Client 
 int main () {
     Process p;

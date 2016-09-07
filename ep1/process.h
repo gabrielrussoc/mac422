@@ -29,5 +29,8 @@ void process_destroy (Process p);
 /* Le um processo do arquivo in */
 Process process_read (FILE *in);
 
+/* Devolve o tempo restante de um processo */
+double process_remaning (Process p);
+
 #endif
 

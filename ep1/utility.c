@@ -2,6 +2,7 @@
 #include "utility.h"
 #include "queue.h"
 #include "heap.h"
+#include "process.h"
 
 FILE *g_in, *g_out;
 pthread_mutex_t g_tlock;    
@@ -14,6 +15,7 @@ int g_thread;
 int g_debug;
 int g_context;
 int g_line;
+Process g_cpu_process;
 
 void thread_wake (Process p) {
     pthread_mutex_lock (&g_tlock);
