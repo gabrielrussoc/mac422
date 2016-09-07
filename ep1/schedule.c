@@ -28,7 +28,11 @@ void *do_something (void *a) {
 
     aux = elapsed ();
     fprintf (g_out, "%s %lf %lf\n", p->name, aux, aux - p->t0);
-    printf ("%s acabou com %lf\n", p->name, elapsed ());
+    if (g_debug) {
+        pthread_mutex_lock (&g_dlock);
+        fprintf (stderr, "%s acabou de executar (escrito na linha %d)\n", p->name, g_line++); 
+        pthread_mutex_unlock (&g_dlock);
+    }
     
     next_fcfs ();
     pthread_exit (NULL);
@@ -42,7 +46,7 @@ static void next_fcfs () {
     pthread_mutex_lock (&g_slock);
     if (g_thread < g_cpu && !queue_isempty (g_queue)) {
         p = queue_front (g_queue);
-        printf ("Rodei %s com %lf\n", p->name, elapsed());
+        if (g_debug) fprintf (stderr, "CPU %d: usada por %s\n", 1, p->name); 
         thread_wake (p);
         dequeue (g_queue);
         g_thread++;
@@ -53,11 +57,15 @@ static void next_fcfs () {
 void fcfs () {
     Process next;
     int i = 0;
-    pthread_t tid[123];
+    pthread_t tid[MAX];
 
     g_queue = queue_create ();
     pthread_mutex_init (&g_tlock, NULL);
     pthread_mutex_init (&g_slock, NULL);
+    if (g_debug) {
+        pthread_mutex_init (&g_dlock, NULL);
+        g_line = 0;
+    }
     /*g_cpu = sysconf(_SC_NPROCESSORS_ONLN);*/
     g_cpu = 1;
     g_thread = 0;
@@ -65,7 +73,7 @@ void fcfs () {
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            printf ("Chegou %s em %lf\n", next->name, elapsed ());
+            if (g_debug) fprintf (stderr, "Novo processo: %s (lido da linha %d)\n", next->name, i);
             pthread_create (&tid[i++], NULL, do_something, next);
             pthread_mutex_lock (&g_slock);
             enqueue (g_queue, next);
@@ -77,7 +85,7 @@ void fcfs () {
 
     while (i) pthread_join(tid[--i], NULL);
 
-    fprintf (g_out, "%d\n", g_context);
+    if (g_debug) fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
 
 /* Escalonador SRTN ////////////////////////////////////////////

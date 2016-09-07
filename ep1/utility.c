@@ -6,12 +6,14 @@
 FILE *g_in, *g_out;
 pthread_mutex_t g_tlock;    
 pthread_mutex_t g_slock;
+pthread_mutex_t g_dlock;
 Queue g_queue;
 Heap g_heap;
 int g_cpu;
 int g_thread;
 int g_debug;
 int g_context;
+int g_line;
 
 void thread_wake (Process p) {
     pthread_mutex_lock (&g_tlock);

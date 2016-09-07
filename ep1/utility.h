@@ -16,12 +16,14 @@
 extern FILE *g_in, *g_out;
 extern pthread_mutex_t g_tlock;    
 extern pthread_mutex_t g_slock;
+extern pthread_mutex_t g_dlock;
 extern Queue g_queue;
 extern Heap g_heap;
 extern int g_cpu;
 extern int g_thread;
 extern int g_debug;
 extern int g_context;
+extern int g_line;
 
 /* Resume a thread atrelada ao processo p */
 void thread_wake (Process p);
