@@ -29,6 +29,7 @@ Process process_read (FILE *in) {
     if (fscanf (in, "%lf %s %lf %lf", &t0, str, &dt, &deadline) != EOF)
         return process_create (t0, str, dt, deadline);
 
+    free (str);
     return NULL;
 }
 
