@@ -60,6 +60,7 @@ void *do_something (void *a) {
     pthread_mutex_unlock (&g_slock);
     
     next_process ();
+    process_destroy (p);
     pthread_exit (NULL);
 }
 
@@ -109,6 +110,7 @@ void fcfs () {
     }
 
     while (i) pthread_join(tid[--i], NULL);
+    queue_destroy (g_queue);
 
     if (g_debug) fprintf (stderr, "[%.3lf] %d mudanças de contexto\n", elapsed (), g_context);
     fprintf (g_out, "%d mudanças de contexto\n", g_context);
@@ -147,6 +149,7 @@ void srtn () {
     }
 
     while (i) pthread_join(tid[--i], NULL);
+    heap_destroy (g_heap);
 
     if (g_debug) fprintf (stderr, "[%.3lf] %d mudanças de contexto\n", elapsed (), g_context);
     fprintf (g_out, "%d mudanças de contexto\n", g_context);
