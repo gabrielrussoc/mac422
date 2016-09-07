@@ -6,8 +6,17 @@
 #include <unistd.h>
 #include <pthread.h>
 
+/* TODO next_process precisa funcionar na do_something para todos os schedulers 
+ * Checar memoria
+ * Escalonador multiplas filas
+ * Fechar os arquivos
+ * */
+
 /* Escolhe a proxima thread a ser executada no algoritmo FCFS */
 static void next_fcfs ();
+
+/* Escolhe a proxima thread a ser executada no algoritmo SRTN */
+static void next_srtn ();
 
 void *do_something (void *a) {
     Process p = a;
@@ -21,20 +30,19 @@ void *do_something (void *a) {
         p->running = elapsed () - start - idle;
     }
 
-    pthread_mutex_lock (&g_slock);
-    g_thread--;
-    pthread_mutex_unlock (&g_slock);
-
-
     aux = elapsed ();
     fprintf (g_out, "%s %lf %lf\n", p->name, aux, aux - p->t0);
     if (g_debug) {
         pthread_mutex_lock (&g_dlock);
-        fprintf (stderr, "%s acabou de executar (escrito na linha %d)\n", p->name, g_line++); 
+        fprintf (stderr, "[%.3lf] %s acabou de executar (escrito na linha %d)\n", elapsed (), p->name, g_line++); 
         pthread_mutex_unlock (&g_dlock);
     }
+
+    pthread_mutex_lock (&g_slock);
+    g_thread--;
+    pthread_mutex_unlock (&g_slock);
     
-    next_fcfs ();
+    next_srtn ();
     pthread_exit (NULL);
 }
 
@@ -46,7 +54,7 @@ static void next_fcfs () {
     pthread_mutex_lock (&g_slock);
     if (g_thread < g_cpu && !queue_isempty (g_queue)) {
         p = queue_front (g_queue);
-        if (g_debug) fprintf (stderr, "CPU %d: usada por %s\n", 1, p->name); 
+        if (g_debug) fprintf (stderr, "[%.3lf] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
         thread_wake (p);
         dequeue (g_queue);
         g_thread++;
@@ -73,7 +81,7 @@ void fcfs () {
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            if (g_debug) fprintf (stderr, "Novo processo: %s (lido da linha %d)\n", next->name, i);
+            if (g_debug) fprintf (stderr, "[%.3lf] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
             pthread_create (&tid[i++], NULL, do_something, next);
             pthread_mutex_lock (&g_slock);
             enqueue (g_queue, next);
@@ -85,12 +93,12 @@ void fcfs () {
 
     while (i) pthread_join(tid[--i], NULL);
 
-    if (g_debug) fprintf (g_out, "%d mudanças de contexto\n", g_context);
+    if (g_debug) fprintf (stderr, "[%.3lf] %d mudanças de contexto\n", elapsed (), g_context);
+    fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
 
 /* Escalonador SRTN ////////////////////////////////////////////
 ///////////////////////////////////////////////////////////// */
-//
 
 void srtn () {
     Process next;
@@ -104,10 +112,14 @@ void srtn () {
         pthread_mutex_init (&g_dlock, NULL);
         g_line = 0;
     }
+    /*g_cpu = sysconf(_SC_NPROCESSORS_ONLN);*/
+    g_cpu = 1;
+    g_thread = 0;
+
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            if (g_debug) fprintf (stderr, "Novo processo: %s (lido da linha %d)\n", next->name, i);
+            if (g_debug) fprintf (stderr, "[%.3lf] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
             pthread_create (&tid[i++], NULL, do_something, next);
             pthread_mutex_lock (&g_slock);
             heap_insert (g_heap, next);
@@ -119,15 +131,17 @@ void srtn () {
 
     while (i) pthread_join(tid[--i], NULL);
 
-    if (g_debug) fprintf (g_out, "%d mudanças de contexto\n", g_context);
+    if (g_debug) fprintf (stderr, "[%.3lf] %d mudanças de contexto\n", elapsed (), g_context);
+    fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
 
-static void next_strn () {
+static void next_srtn () {
     Process p, q;
     pthread_mutex_lock (&g_slock);
     if (g_thread < g_cpu && !heap_isempty (g_heap)) {
         g_thread++;
         p = heap_getMin (g_heap);
+        if (g_debug) fprintf (stderr, "[%.3lf] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
         thread_wake (p);
         g_cpu_process = p;
         heap_deleteMin (g_heap);
@@ -135,16 +149,18 @@ static void next_strn () {
     else if (!heap_isempty (g_heap)) {
         p = heap_getMin (g_heap);
         q = g_cpu_process;
-        if (remaining (p) < remaining (q)) {
+        if (process_remaining (p) < process_remaining (q)) {
+            if (g_debug) fprintf (stderr, "[%.3lf] CPU %d: liberada por %s\n", elapsed (), 1, q->name); 
             thread_sleep (q);
+            if (g_debug) fprintf (stderr, "[%.3lf] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
             thread_wake (p);
             g_cpu_process = p;
             heap_deleteMin (g_heap);
-            heap_insert (q);
+            heap_insert (g_heap, q);
             g_context++;
         }
     }
-    pthread_mutex_lock (&g_slock);
+    pthread_mutex_unlock (&g_slock);
 }
 
 /* Escalonador Multiplas Filas  ////////////////////////////////

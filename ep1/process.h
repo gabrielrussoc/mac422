@@ -30,7 +30,7 @@ void process_destroy (Process p);
 Process process_read (FILE *in);
 
 /* Devolve o tempo restante de um processo */
-double process_remaning (Process p);
+double process_remaining (Process p);
 
 #endif
 
