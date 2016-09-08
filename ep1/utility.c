@@ -15,10 +15,10 @@ int g_cpu;
 int g_thread;
 int g_debug;
 int g_context;
-int g_line;
 Process g_cpu_process;
 int g_scheduler;
 double g_start;
+int g_deadline;
 
 void thread_wake (Process p) {
     pthread_mutex_lock (&g_tlock);
@@ -49,10 +49,7 @@ double thread_check (Process p) {
 void mutex_init () {
    pthread_mutex_init (&g_tlock, NULL);
     pthread_mutex_init (&g_slock, NULL);
-    if (g_debug) {
-        pthread_mutex_init (&g_dlock, NULL);
-        g_line = 0;
-    }
+    if (g_debug) pthread_mutex_init (&g_dlock, NULL);
 }
 
 void mutex_destroy () {

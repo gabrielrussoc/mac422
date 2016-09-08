@@ -12,6 +12,7 @@
  * Slides
  * Testes
  * OPCIONAL: Codigo ~mais~ bonito
+ * Tirar print dos deadlines
  * */
 
 /* Escolhe a proxima thread a ser executada no algoritmo FCFS */
@@ -64,12 +65,13 @@ void *do_something (void *a) {
     fprintf (g_out, "%s %.3fs %.3fs\n", p->name, aux, aux - p->t0);
     if (g_debug) {
         pthread_mutex_lock (&g_dlock);
-        fprintf (stderr, "[%.3fs] %s acabou de executar (escrito na linha %d)\n", elapsed (), p->name, g_line++); 
+        fprintf (stderr, "[%.3fs] acabou de executar: %s %.3fs %.3fs\n", elapsed (), p->name, aux, aux - p->t0); 
         pthread_mutex_unlock (&g_dlock);
     }
 
     pthread_mutex_lock (&g_slock);
     g_thread--;
+    if (aux <= p->deadline) g_deadline++;
     pthread_mutex_unlock (&g_slock);
     
     next_process ();
@@ -94,7 +96,8 @@ void fcfs () {
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
+            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %.3f %s %.3f %.3f\n", elapsed (), 
+                                                                next->t0, next->name, next->dt, next->deadline);
             pthread_create (&tid[i++], NULL, do_something, next);
             pthread_mutex_lock (&g_slock);
             enqueue (g_queue, next);
@@ -109,7 +112,7 @@ void fcfs () {
     mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
-    fprintf (g_out, "%d mudanças de contexto\n", g_context);
+    fprintf (g_out, "%d mudanças de contexto\n%d deadlines cumpridas\n", g_context, g_deadline);
 }
 
 static void next_fcfs () {
@@ -143,7 +146,8 @@ void srtn () {
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
+            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %.3f %s %.3f %.3f\n", elapsed (), 
+                                                                next->t0, next->name, next->dt, next->deadline);
             pthread_create (&tid[i++], NULL, do_something, next);
             pthread_mutex_lock (&g_slock);
             heap_insert (g_heap, next);
@@ -158,7 +162,7 @@ void srtn () {
     mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
-    fprintf (g_out, "%d mudanças de contexto\n", g_context);
+    fprintf (g_out, "%d mudanças de contexto\n%d deadlines cumpridas\n", g_context, g_deadline);
 }
 
 static void next_srtn () {
@@ -207,7 +211,8 @@ void multilevel () {
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
+            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %.3f %s %.3f %.3f\n", elapsed (), 
+                                                                next->t0, next->name, next->dt, next->deadline);
             pthread_create (&tid[i++], NULL, do_something_else, next);
             pthread_mutex_lock (&g_slock);
             enqueue (g_multi_queues[0], next);
@@ -222,7 +227,7 @@ void multilevel () {
     mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
-    fprintf (g_out, "%d mudanças de contexto\n", g_context);
+    fprintf (g_out, "%d mudanças de contexto\n%d deadlines cumpridas\n", g_context, g_deadline);
 }
 
 void next_multilevel () {
@@ -271,12 +276,13 @@ void *do_something_else (void *a) {
     fprintf (g_out, "%s %.3fs %.3fs\n", p->name, aux, aux - p->t0);
     if (g_debug) {
         pthread_mutex_lock (&g_dlock);
-        fprintf (stderr, "[%.3fs] %s acabou de executar (escrito na linha %d)\n", elapsed (), p->name, g_line++); 
+        fprintf (stderr, "[%.3fs] acabou de executar: %s %.3fs %.3fs\n", elapsed (), p->name, aux, aux - p->t0); 
         pthread_mutex_unlock (&g_dlock);
     }
 
     pthread_mutex_lock (&g_slock);
     g_thread--;
+    if (aux <= p->deadline) g_deadline++;
     pthread_mutex_unlock (&g_slock);
 
     next_process ();
