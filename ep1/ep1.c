@@ -21,6 +21,9 @@ int main (int argc, char **argv) {
         case 2:
             srtn ();
             break;
+        case 3; 
+            multilevel ();
+            break;
         default:
             fprintf (stderr, "Esse nao e um escalonador valido\n");
             break;

@@ -7,9 +7,9 @@
 FILE *g_in, *g_out;
 pthread_mutex_t g_tlock;    
 pthread_mutex_t g_slock;
-pthread_mutex_t g_dlock;
 Queue g_queue;
 Heap g_heap;
+Queue *g_multi_queue;
 int g_cpu;
 int g_thread;
 int g_debug;
