@@ -16,6 +16,7 @@ typedef struct {
     int paused;
     pthread_cond_t cond;
     double running;
+    int level;
 } process;
 
 typedef process* Process;
@@ -31,6 +32,11 @@ Process process_read (FILE *in);
 
 /* Devolve o tempo restante de um processo */
 double process_remaining (Process p);
+
+/* Devolve quantos quanta o processo p tem disponivel,
+ * com base em sua classe (para o escalonamento com multiplas
+ * filas). */
+double process_quantum (Process p);
 
 #endif
 

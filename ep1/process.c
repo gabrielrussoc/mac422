@@ -12,6 +12,7 @@ Process process_create (double t0, string name, double dt, double deadline) {
     p->deadline = deadline;
     p->paused = 1;
     p->running = 0.;
+    p->level = 0;
     pthread_cond_init (&(p->cond), NULL);
 
     return p;
@@ -35,6 +36,10 @@ Process process_read (FILE *in) {
 
 double process_remaining (Process p) {
     return p->dt - p->running;
+}
+
+double process_quantum (Process p) {
+    return 1<<(p->level);
 }
 
 /* Test Client 
