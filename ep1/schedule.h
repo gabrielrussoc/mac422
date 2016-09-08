@@ -14,5 +14,8 @@ void fcfs ();
 /* Escalona os processos com o algoritmo SRTN */
 void srtn ();
 
+/* Escalona os processos com o algoritmo de multiplas filas */
+void multilevel ();
+
 #endif
 
