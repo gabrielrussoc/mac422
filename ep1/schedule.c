@@ -61,10 +61,10 @@ void *do_something (void *a) {
     }
 
     aux = elapsed ();
-    fprintf (g_out, "%s %f %f\n", p->name, aux, aux - p->t0);
+    fprintf (g_out, "%s %.3fs %.3fs\n", p->name, aux, aux - p->t0);
     if (g_debug) {
         pthread_mutex_lock (&g_dlock);
-        fprintf (stderr, "[%.3f] %s acabou de executar (escrito na linha %d)\n", elapsed (), p->name, g_line++); 
+        fprintf (stderr, "[%.3fs] %s acabou de executar (escrito na linha %d)\n", elapsed (), p->name, g_line++); 
         pthread_mutex_unlock (&g_dlock);
     }
 
@@ -94,7 +94,7 @@ void fcfs () {
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            if (g_debug) fprintf (stderr, "[%.3f] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
+            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
             pthread_create (&tid[i++], NULL, do_something, next);
             pthread_mutex_lock (&g_slock);
             enqueue (g_queue, next);
@@ -108,7 +108,7 @@ void fcfs () {
     queue_destroy (g_queue);
     mutex_destroy ();
 
-    if (g_debug) fprintf (stderr, "[%.3f] %d mudanças de contexto\n", elapsed (), g_context);
+    if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
     fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
 
@@ -117,7 +117,7 @@ static void next_fcfs () {
     pthread_mutex_lock (&g_slock);
     if (g_thread < g_cpu && !queue_isempty (g_queue)) {
         p = queue_front (g_queue);
-        if (g_debug) fprintf (stderr, "[%.3f] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+        if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
         thread_wake (p);
         dequeue (g_queue);
         g_thread++;
@@ -143,7 +143,7 @@ void srtn () {
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            if (g_debug) fprintf (stderr, "[%.3f] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
+            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
             pthread_create (&tid[i++], NULL, do_something, next);
             pthread_mutex_lock (&g_slock);
             heap_insert (g_heap, next);
@@ -157,7 +157,7 @@ void srtn () {
     heap_destroy (g_heap);
     mutex_destroy ();
 
-    if (g_debug) fprintf (stderr, "[%.3f] %d mudanças de contexto\n", elapsed (), g_context);
+    if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
     fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
 
@@ -167,7 +167,7 @@ static void next_srtn () {
     if (g_thread < g_cpu && !heap_isempty (g_heap)) {
         g_thread++;
         p = heap_getMin (g_heap);
-        if (g_debug) fprintf (stderr, "[%.3f] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+        if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
         thread_wake (p);
         g_cpu_process = p;
         heap_deleteMin (g_heap);
@@ -176,9 +176,9 @@ static void next_srtn () {
         p = heap_getMin (g_heap);
         q = g_cpu_process;
         if (process_remaining (p) < process_remaining (q)) {
-            if (g_debug) fprintf (stderr, "[%.3f] CPU %d: liberada por %s\n", elapsed (), 1, q->name); 
+            if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: liberada por %s\n", elapsed (), 1, q->name); 
             thread_sleep (q);
-            if (g_debug) fprintf (stderr, "[%.3f] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+            if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
             thread_wake (p);
             g_cpu_process = p;
             heap_deleteMin (g_heap);
@@ -207,7 +207,7 @@ void multilevel () {
     next = process_read (g_in);
     while (next != NULL) { 
         if (next->t0 <= elapsed ()) {
-            if (g_debug) fprintf (stderr, "[%.3f] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
+            if (g_debug) fprintf (stderr, "[%.3fs] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
             pthread_create (&tid[i++], NULL, do_something_else, next);
             pthread_mutex_lock (&g_slock);
             enqueue (g_multi_queues[0], next);
@@ -221,7 +221,7 @@ void multilevel () {
     multi_destroy ();
     mutex_destroy ();
 
-    if (g_debug) fprintf (stderr, "[%.3f] %d mudanças de contexto\n", elapsed (), g_context);
+    if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
     fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
 
@@ -234,7 +234,7 @@ void next_multilevel () {
         if (!queue_isempty (g_multi_queues[i])) break;
     if (i != NQUEUES && g_thread < g_cpu) {
         p = queue_front (g_multi_queues[i]);
-        if (g_debug) fprintf (stderr, "[%.3f] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+        if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
         thread_wake (p);
         g_thread++;
         dequeue (g_multi_queues[i]);
@@ -255,7 +255,7 @@ void *do_something_else (void *a) {
         p->running = elapsed () - start - idle;
         if (p->running - aux  >= process_quantum (p) && p->running < p->dt) {
             thread_sleep (p);
-            if (g_debug) fprintf (stderr, "[%.3f] CPU %d: liberada por %s\n", elapsed (), 1, p->name); 
+            if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: liberada por %s\n", elapsed (), 1, p->name); 
             aux = p->running;
             p->level = (p->level + 1) % NQUEUES;
             pthread_mutex_lock (&g_slock);
@@ -268,10 +268,10 @@ void *do_something_else (void *a) {
     }
 
     aux = elapsed ();
-    fprintf (g_out, "%s %f %f\n", p->name, aux, aux - p->t0);
+    fprintf (g_out, "%s %.3fs %.3fs\n", p->name, aux, aux - p->t0);
     if (g_debug) {
         pthread_mutex_lock (&g_dlock);
-        fprintf (stderr, "[%.3f] %s acabou de executar (escrito na linha %d)\n", elapsed (), p->name, g_line++); 
+        fprintf (stderr, "[%.3fs] %s acabou de executar (escrito na linha %d)\n", elapsed (), p->name, g_line++); 
         pthread_mutex_unlock (&g_dlock);
     }
 
