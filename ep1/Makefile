@@ -1,8 +1,8 @@
 CC=gcc
-CFLAGS=-Wall -ansi -O2 -pedantic -g
+CFLAGS=-Wall -ansi -O2 -pedantic -pthread
 LIBS=-lreadline
 
-all: ep1sh ep1
+all: ep1sh ep1 clear
 
 clear:
 	rm *.o
