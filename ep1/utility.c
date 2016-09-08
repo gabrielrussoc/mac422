@@ -22,14 +22,14 @@ double g_start;
 
 void thread_wake (Process p) {
     pthread_mutex_lock (&g_tlock);
-    p->paused = 0;
+    p->paused = FALSE;
     pthread_cond_signal (&(p->cond));
     pthread_mutex_unlock (&g_tlock);
 }
 
 void thread_sleep (Process p) {
     pthread_mutex_lock (&g_tlock);
-    p->paused = 1;
+    p->paused = TRUE;
     pthread_mutex_unlock (&g_tlock);
 }
 
