@@ -5,18 +5,13 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <stdlib.h>
 
 /* TODO 
- * e se tirassemos o g_thread mandando o next somente quando for necessario e nao sempre
  * Checar memoria
- * Escalonador multiplas filas: variavel global que marca o tempo do cara 
- *  na cpu, dai no next ele verfica isso e pausa o maluco 
- *  temos ele tbm, entao podemos dar enqueue na fila certa
- *  um sinal pro next_multilevel que vai ser um while nao vazio fica 
- *  rodando entre as filas e so manda quando o sinal chegar quando ler um cara chama
- *  next 
- *  problema, se fizer separado do multilevel nao vamos inseririr os processo sna hor
- *  que chegam
+ * Slides
+ * Testes
+ * OPCIONAL: Codigo ~mais~ bonito
  * */
 
 /* Escolhe a proxima thread a ser executada no algoritmo FCFS */
@@ -32,6 +27,12 @@ static void next_multilevel ();
 /* Escolhe a proxima thread a ser executada com base no algoritmo
  * de escalonamento que está rodando (g_scheduler) */
 static void next_process ();
+
+/* Inicializa as estruturas para o escalonamento de multiplas filas */
+static void multi_init ();
+
+/* Destroi as estruturas do escalonamento de multiplas filas */
+static void multi_destroy ();
 
 static void next_process () {
     switch (g_scheduler) {
@@ -99,8 +100,8 @@ void fcfs () {
             enqueue (g_queue, next);
             pthread_mutex_unlock (&g_slock);
             next = process_read (g_in);
+            next_process ();
         }
-        next_fcfs ();
     }
 
     while (i) pthread_join(tid[--i], NULL);
@@ -148,8 +149,8 @@ void srtn () {
             heap_insert (g_heap, next);
             pthread_mutex_unlock (&g_slock);
             next = process_read (g_in);
+            next_process ();
         }
-        next_srtn ();
     }
 
     while (i) pthread_join(tid[--i], NULL);
@@ -191,16 +192,14 @@ static void next_srtn () {
 /* Escalonador Multiplas Filas  ////////////////////////////////
 ///////////////////////////////////////////////////////////// */
 
-void multilevel () 
+void multilevel () {
     Process next;
     int i = 0;
     pthread_t tid[MAX];
 
-    /* Criar vetor de filas */
-    multilevel_init (); 
+    multi_init(); 
     mutex_init ();
 
-    /* Inicializacao de variaveis */`
     /*g_cpu = sysconf(_SC_NPROCESSORS_ONLN);*/
     g_cpu = 1;
     g_thread = 0;
@@ -211,16 +210,15 @@ void multilevel ()
             if (g_debug) fprintf (stderr, "[%.3f] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
             pthread_create (&tid[i++], NULL, do_something_else, next);
             pthread_mutex_lock (&g_slock);
-            enqueue (g_muli_queues[next->level], next);
+            enqueue (g_multi_queues[0], next);
             pthread_mutex_unlock (&g_slock);
-            next_multilevel ();
             next = process_read (g_in);
+            next_process ();
         }
     }
 
     while (i) pthread_join(tid[--i], NULL);
-    /* Destroi vetor de filas */
-    multilevel_destroy ();
+    multi_destroy ();
     mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3f] %d mudanças de contexto\n", elapsed (), g_context);
@@ -228,25 +226,20 @@ void multilevel ()
 }
 
 void next_multilevel () {
-    /* pensando que eu tenho globalmente a fila que eu retirei o ultimo processo */
     Process p;
     int i;
 
-
     pthread_mutex_lock (&g_slock);
-    for (i = 0; i < g_nqueues; i++) 
+    for (i = 0; i < NQUEUES; i++) 
         if (!queue_isempty (g_multi_queues[i])) break;
-    if (i != q_nqueue) {
+    if (i != NQUEUES && g_thread < g_cpu) {
         p = queue_front (g_multi_queues[i]);
         if (g_debug) fprintf (stderr, "[%.3f] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
         thread_wake (p);
-
         g_thread++;
-
-        dequeue (g_multi_queue[i]);
+        dequeue (g_multi_queues[i]);
     }
     pthread_mutex_unlock (&g_slock);
-
 }
 
 void *do_something_else (void *a) {
@@ -260,14 +253,17 @@ void *do_something_else (void *a) {
         idle += thread_check (p);
         foo = foo * 1;
         p->running = elapsed () - start - idle;
-        if (p->running - aux  > process_quantum (p)) {
-            thread sleep (p);
+        if (p->running - aux  >= process_quantum (p) && p->running < p->dt) {
+            thread_sleep (p);
+            if (g_debug) fprintf (stderr, "[%.3f] CPU %d: liberada por %s\n", elapsed (), 1, p->name); 
             aux = p->running;
-            p->level = (p->level + 1) % g_nqueues; 
+            p->level = (p->level + 1) % NQUEUES;
             pthread_mutex_lock (&g_slock);
-            enqueue (q_multi_queues[p->level], p);
+            g_thread--;
+            g_context++;
+            enqueue (g_multi_queues[p->level], p);
             pthread_mutex_unlock (&g_slock);
-            next_multilevel ();
+            next_process ();
         }
     }
 
@@ -278,7 +274,6 @@ void *do_something_else (void *a) {
         fprintf (stderr, "[%.3f] %s acabou de executar (escrito na linha %d)\n", elapsed (), p->name, g_line++); 
         pthread_mutex_unlock (&g_dlock);
     }
-    next_multilevel ();
 
     pthread_mutex_lock (&g_slock);
     g_thread--;
@@ -291,10 +286,14 @@ void *do_something_else (void *a) {
 
 static void multi_init () {
     int i;
-    for (i = 0; i < g_nqueues; i++) 
+    g_multi_queues = malloc (NQUEUES * sizeof (Queue));
+    for (i = 0; i < NQUEUES; i++) 
         g_multi_queues[i] = queue_create (); 
 }
 static void multi_destroy () {
     int i;
-    for (i = 0; i < g_nqueues; i++) 
-        queue_destroy (g_multi_queues[i]; 
+    for (i = 0; i < NQUEUES; i++) 
+        queue_destroy (g_multi_queues[i]); 
+    free (g_multi_queues);
+}
+

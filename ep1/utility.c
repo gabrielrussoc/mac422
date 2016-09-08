@@ -7,9 +7,10 @@
 FILE *g_in, *g_out;
 pthread_mutex_t g_tlock;    
 pthread_mutex_t g_slock;
+pthread_mutex_t g_dlock;
 Queue g_queue;
 Heap g_heap;
-Queue *g_multi_queue;
+Queue *g_multi_queues;
 int g_cpu;
 int g_thread;
 int g_debug;
@@ -17,6 +18,7 @@ int g_context;
 int g_line;
 Process g_cpu_process;
 int g_scheduler;
+double g_start;
 
 void thread_wake (Process p) {
     pthread_mutex_lock (&g_tlock);
@@ -60,6 +62,6 @@ void mutex_destroy () {
 }
 
 double elapsed () {
-    return (double) clock () / CLOCKS_PER_SEC;
+    return (double) clock () / CLOCKS_PER_SEC - g_start;
 }
 

@@ -4,6 +4,10 @@
 /* Funcao que cada thread executada, consumindo tempo de CPU. */
 void *do_something (void *a);
 
+/* Funcao que cada thread executada, consumindo tempo de CPU. 
+ * Usada no escalonamento de multiplas filas. */
+void *do_something_else (void *a);
+
 /* Escalona os processos com o algoritmo FCFS */
 void fcfs ();
 
