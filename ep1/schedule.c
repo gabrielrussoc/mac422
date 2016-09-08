@@ -8,7 +8,6 @@
 
 /* TODO 
  * e se tirassemos o g_thread mandando o next somente quando for necessario e nao sempre
- * tirar lf
  * Checar memoria
  * Escalonador multiplas filas: variavel global que marca o tempo do cara 
  *  na cpu, dai no next ele verfica isso e pausa o maluco 
@@ -212,7 +211,7 @@ void multilevel ()
             if (g_debug) fprintf (stderr, "[%.3f] Novo processo: %s (lido da linha %d)\n", elapsed (), next->name, i);
             pthread_create (&tid[i++], NULL, do_something_else, next);
             pthread_mutex_lock (&g_slock);
-            enqueue (g_muli_queues[next->class], next);
+            enqueue (g_muli_queues[next->level], next);
             pthread_mutex_unlock (&g_slock);
             next_multilevel ();
             next = process_read (g_in);
@@ -264,9 +263,9 @@ void *do_something_else (void *a) {
         if (p->running - aux  > process_quantum (p)) {
             thread sleep (p);
             aux = p->running;
-            p->class = (p->class + 1) % g_nqueues; 
+            p->level = (p->level + 1) % g_nqueues; 
             pthread_mutex_lock (&g_slock);
-            enqueue (q_multi_queues[p->class], p);
+            enqueue (q_multi_queues[p->level], p);
             pthread_mutex_unlock (&g_slock);
             next_multilevel ();
         }
