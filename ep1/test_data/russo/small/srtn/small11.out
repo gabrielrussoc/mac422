@@ -1,0 +1,22 @@
+process1 3.816s 1.632s
+process2 5.877s 1.786s
+process3 9.820s 3.810s
+process6 10.903s 0.814s
+process0 15.745s 14.966s
+process11 17.606s 2.025s
+process9 21.468s 7.534s
+process16 25.144s 3.244s
+process17 28.547s 6.323s
+process12 32.791s 16.019s
+process10 37.536s 23.399s
+process15 42.345s 22.167s
+process19 48.015s 23.577s
+process7 53.985s 42.042s
+process5 60.326s 51.672s
+process8 67.306s 54.562s
+process18 74.468s 50.509s
+process4 82.241s 74.615s
+process13 90.704s 72.001s
+process14 99.886s 80.287s
+5 mudanças de contexto
+7 deadlines cumpridas
