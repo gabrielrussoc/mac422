@@ -168,9 +168,9 @@ static void next_srtn () {
         p = heap_getMin (g_heap);
         q = g_cpu_process;
         if (process_remaining (p) < process_remaining (q)) {
-            if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: liberada por %s\n", elapsed (), 1, q->name); 
+            if (g_debug) fprintf (stderr, "[%.3fs] CPU liberada por %s\n", elapsed (), q->name); 
             thread_sleep (q);
-            if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+            if (g_debug) fprintf (stderr, "[%.3fs] CPU usada por %s\n", elapsed (), p->name); 
             thread_wake (p);
             g_cpu_process = p;
             heap_deleteMin (g_heap);
@@ -227,7 +227,7 @@ void next_multilevel () {
         if (!queue_isempty (g_multi_queues[i])) break;
     if (i != NQUEUES && g_thread < g_cpu) {
         p = queue_front (g_multi_queues[i]);
-        if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+        if (g_debug) fprintf (stderr, "[%.3fs] CPU usada por %s\n", elapsed (), p->name); 
         thread_wake (p);
         g_thread++;
         dequeue (g_multi_queues[i]);
