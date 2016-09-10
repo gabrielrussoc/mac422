@@ -7,14 +7,6 @@
 #include <pthread.h>
 #include <stdlib.h>
 
-/* TODO 
- * Checar memoria
- * Slides
- * Testes
- * OPCIONAL: Codigo ~mais~ bonito
- * Tirar print dos deadlines
- * */
-
 /* Escolhe a proxima thread a ser executada no algoritmo FCFS */
 static void next_fcfs ();
 
@@ -63,15 +55,11 @@ void *do_something (void *a) {
 
     aux = elapsed ();
     fprintf (g_out, "%s %.3fs %.3fs\n", p->name, aux, aux - p->t0);
-    if (g_debug) {
-        pthread_mutex_lock (&g_dlock);
+    if (g_debug)
         fprintf (stderr, "[%.3fs] acabou de executar: %s %.3fs %.3fs\n", elapsed (), p->name, aux, aux - p->t0); 
-        pthread_mutex_unlock (&g_dlock);
-    }
 
     pthread_mutex_lock (&g_slock);
     g_thread--;
-    if (aux <= p->deadline) g_deadline++;
     pthread_mutex_unlock (&g_slock);
     
     next_process ();
@@ -112,7 +100,7 @@ void fcfs () {
     mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
-    fprintf (g_out, "%d mudanças de contexto\n%d deadlines cumpridas\n", g_context, g_deadline);
+    fprintf (g_out, "%d mudanças de contexto\n", g_context); 
 }
 
 static void next_fcfs () {
@@ -120,7 +108,7 @@ static void next_fcfs () {
     pthread_mutex_lock (&g_slock);
     if (g_thread < g_cpu && !queue_isempty (g_queue)) {
         p = queue_front (g_queue);
-        if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+        if (g_debug) fprintf (stderr, "[%.3fs] CPU usada por %s\n", elapsed (), p->name); 
         thread_wake (p);
         dequeue (g_queue);
         g_thread++;
@@ -162,7 +150,7 @@ void srtn () {
     mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
-    fprintf (g_out, "%d mudanças de contexto\n%d deadlines cumpridas\n", g_context, g_deadline);
+    fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
 
 static void next_srtn () {
@@ -171,7 +159,7 @@ static void next_srtn () {
     if (g_thread < g_cpu && !heap_isempty (g_heap)) {
         g_thread++;
         p = heap_getMin (g_heap);
-        if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: usada por %s\n", elapsed (), 1, p->name); 
+        if (g_debug) fprintf (stderr, "[%.3fs] CPU usada por %s\n", elapsed (), p->name); 
         thread_wake (p);
         g_cpu_process = p;
         heap_deleteMin (g_heap);
@@ -227,7 +215,7 @@ void multilevel () {
     mutex_destroy ();
 
     if (g_debug) fprintf (stderr, "[%.3fs] %d mudanças de contexto\n", elapsed (), g_context);
-    fprintf (g_out, "%d mudanças de contexto\n%d deadlines cumpridas\n", g_context, g_deadline);
+    fprintf (g_out, "%d mudanças de contexto\n", g_context);
 }
 
 void next_multilevel () {
@@ -260,7 +248,7 @@ void *do_something_else (void *a) {
         p->running = elapsed () - start - idle;
         if (p->running - aux  >= process_quantum (p) && p->running < p->dt) {
             thread_sleep (p);
-            if (g_debug) fprintf (stderr, "[%.3fs] CPU %d: liberada por %s\n", elapsed (), 1, p->name); 
+            if (g_debug) fprintf (stderr, "[%.3fs] CPU liberada por %s\n", elapsed (), p->name); 
             aux = p->running;
             p->level = (p->level + 1) % NQUEUES;
             pthread_mutex_lock (&g_slock);
@@ -274,15 +262,11 @@ void *do_something_else (void *a) {
 
     aux = elapsed ();
     fprintf (g_out, "%s %.3fs %.3fs\n", p->name, aux, aux - p->t0);
-    if (g_debug) {
-        pthread_mutex_lock (&g_dlock);
+    if (g_debug)
         fprintf (stderr, "[%.3fs] acabou de executar: %s %.3fs %.3fs\n", elapsed (), p->name, aux, aux - p->t0); 
-        pthread_mutex_unlock (&g_dlock);
-    }
 
     pthread_mutex_lock (&g_slock);
     g_thread--;
-    if (aux <= p->deadline) g_deadline++;
     pthread_mutex_unlock (&g_slock);
 
     next_process ();

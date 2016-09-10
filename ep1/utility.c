@@ -7,7 +7,6 @@
 FILE *g_in, *g_out;
 pthread_mutex_t g_tlock;    
 pthread_mutex_t g_slock;
-pthread_mutex_t g_dlock;
 Queue g_queue;
 Heap g_heap;
 Queue *g_multi_queues;
@@ -18,7 +17,6 @@ int g_context;
 Process g_cpu_process;
 int g_scheduler;
 double g_start;
-int g_deadline;
 
 void thread_wake (Process p) {
     pthread_mutex_lock (&g_tlock);
@@ -47,15 +45,13 @@ double thread_check (Process p) {
 }
 
 void mutex_init () {
-   pthread_mutex_init (&g_tlock, NULL);
+    pthread_mutex_init (&g_tlock, NULL);
     pthread_mutex_init (&g_slock, NULL);
-    if (g_debug) pthread_mutex_init (&g_dlock, NULL);
 }
 
 void mutex_destroy () {
     pthread_mutex_destroy (&g_tlock);
     pthread_mutex_destroy (&g_slock);
-    if (g_debug) pthread_mutex_destroy (&g_dlock);
 }
 
 double elapsed () {

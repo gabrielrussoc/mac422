@@ -21,7 +21,6 @@ extern FILE *g_in, *g_out;
 /* Mutexes */
 extern pthread_mutex_t g_tlock;    
 extern pthread_mutex_t g_slock;
-extern pthread_mutex_t g_dlock;
 
 /* Estruturas */
 extern Queue g_queue;
@@ -36,7 +35,6 @@ extern int g_context;
 extern Process g_cpu_process;
 extern int g_scheduler;
 extern double g_start;
-extern int g_deadline;
 
 /* Resume a thread atrelada ao processo p */
 void thread_wake (Process p);
