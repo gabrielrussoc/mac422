@@ -1,0 +1,20 @@
+Instruções sobre compilação e execução dos binários.
+
+Parte 1: Shell
+
+    Para compilar: 
+        make ep1sh
+
+    Para executar:
+        ./ep1sh
+
+
+Parte 2: Escalonadores
+
+    Para compilar:
+        make ep1
+    
+    Para executar:
+        ./ep1 sched trace saida [d]
+
+
