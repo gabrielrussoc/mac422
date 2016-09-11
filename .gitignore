@@ -1,6 +1,7 @@
 .DS_Store
 *.swp
-ep1
-ep1sh
 *.o
 out
+ep1/ep1
+ep1/ep1sh
+
