@@ -2,7 +2,7 @@
  *
  *  Módulo responsável pela manipulação de uma Fila.
  *  A Fila e armazenado em uma lista ligada.
- *  *//////////////////////////////////////////////*/
+ */
 
 
 #ifndef _QUEUE_H
