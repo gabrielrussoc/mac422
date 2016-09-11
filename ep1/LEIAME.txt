@@ -1,20 +1,18 @@
+Gabriel de Russo e Carmo 9298041
+Victor Wichmann Raposo 9298020
+
 Instruções sobre compilação e execução dos binários.
+Testado em sistemas baseados em Debian e no OSX 10.11
 
-Parte 1: Shell
+Depêndencias: GNU readline e GNU history
 
-    Para compilar: 
-        make ep1sh
+Para compilar: 
+    make 
 
-    Para executar:
-        ./ep1sh
+Para executar o shell: 
+    ./ep1sh
 
-
-Parte 2: Escalonadores
-
-    Para compilar:
-        make ep1
-    
-    Para executar:
-        ./ep1 sched trace saida [d]
+Para executar o simulador:
+    ./ep1 sched trace saida [d]
 
 
