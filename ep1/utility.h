@@ -6,6 +6,10 @@
 #include "heap.h"
 #include "queue.h"
 
+/* Biblioteca de utilidade
+ * Guarda variaveis globais, constantes, funcoes de uso
+ * geral e etc */
+
 /* Constantes */
 #define TRUE 1
 #define FALSE 0

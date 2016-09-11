@@ -1,6 +1,10 @@
 #ifndef _SCHEDULE_H
 #define _SCHEDULE_H
 
+/* Biblioteca dos escalonadores 
+ * Contem os algoritmos de escalonamento, assim como 
+ * as funcoes que serao utilizadas nas threads */
+
 /* Funcao que cada thread executada, consumindo tempo de CPU. */
 void *do_something (void *a);
 

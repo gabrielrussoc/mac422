@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <pthread.h>
 
-/* Biblioteca dos processos */
+/* Biblioteca dos processos 
+ * Guarda suas informações e funções relacionadas a eles
+ * */
 
 typedef char* string;
 
