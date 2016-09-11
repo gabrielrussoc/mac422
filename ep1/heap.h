@@ -1,3 +1,11 @@
+/* Descrição do Módulo 
+ *
+ *  Módulo responsável pela manipulação do Heap.
+ *  O Heap e armazenado em um vetor, e é um heap de 
+ *  mínimo que se baseia no tempo restante de um 
+ *  processo para suas comparações.     
+ *//////////////////////////////////////////////*/
+
 #ifndef _HEAP_H
 #define _HEAP_H
 
