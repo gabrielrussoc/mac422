@@ -1,0 +1,34 @@
+Vetor pista[][2] (0 no segundo cara, caso não haja)
+Vetor de ordenação da equipe
+Vetor de ciclistas
+Ciclistas da equipe A são labelados em [1,n]
+Ciclistas da equipe B são labelados em [n+1, 2n]
+Na largada, os ciclistas começam enfileirados da forma
+1,2,..,n,-1,-2,..,-n
+A equipe A começa enfileirada com o primeiro no 0 (o resto atrás, na volta anterior)
+A equipe B começa enfileirada com o primeiro em d/2 (o resto atrás, na volta anterior)
+Ciclistas precisam guardar o ponto de partida
+Ciclistas guardam a posição relativa entre sua própria equipe
+Ciclistas guardam a posição absoluta
+Ciclistas guardam se estão no meio do metro (?)
+
+typedef struct {
+    int id; /* equipe implicita */
+    int chegada;
+    int volta;
+    int pos;
+    int pos_eq;
+    int meio;
+    int vel;
+    int quebrado; /*guarda a volta que quebrou, -1 se nao quebrou */
+} atleta;
+typedef atleta *Atleta;
+
+TODO: Resolver problema do sorteio das velocidades
+ASSUMIMOS: Pode sortear 30/60 independente de qualquer coisa
+
+PARALELISMO
+
+Semáforo pra pista[][]
+Sincronização no final de cada iteração
+Semáforo para quebrar
