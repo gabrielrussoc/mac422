@@ -1,10 +1,9 @@
-Vetor pista[][2] (0 no segundo cara, caso não haja)
+Vetor pista[][2] (-1 no segundo cara, caso não haja)
 Vetor de ordenação da equipe
 Vetor de ciclistas
-Ciclistas da equipe A são labelados em [1,n]
-Ciclistas da equipe B são labelados em [n+1, 2n]
+Ciclistas da equipe A são labelados em [0,n-1]
+Ciclistas da equipe B são labelados em [n, 2n-1]
 Na largada, os ciclistas começam enfileirados da forma
-1,2,..,n,-1,-2,..,-n
 A equipe A começa enfileirada com o primeiro no 0 (o resto atrás, na volta anterior)
 A equipe B começa enfileirada com o primeiro em d/2 (o resto atrás, na volta anterior)
 Ciclistas precisam guardar o ponto de partida

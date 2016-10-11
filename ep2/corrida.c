@@ -1,19 +1,23 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include "atleta.h"
+#include "utilitarios.h"
 
-void *thread_ciclista (void *p) {
+void *ciclista (void *p) {
     int id = *((int *) p);
     int tempo = 0, aux;
-    while (ciclista[id].volta < NVOLTAS) {
-        if (quebra (id, volta)) break;
-        ciclista[id].vel = sorteia_vel (id);
-        aux = ciclista[id].pos;
+    while (cic[id].volta < NVOLTAS) {
+        if (quebra (id)) break;
+        cic[id].vel = sorteia_vel (id);
+        aux = cic[id].pos;
         atualiza_pos (id);
-        atualiza_pista (aux, ciclista[id].pos);
-        atualiza_volta;
+        atualiza_pista (aux, cic[id].pos);
+        atualiza_volta (id);
         sincroniza (id);
         tempo++;
     }
-    ciclista[id].final = tempo;
+    cic[id].final = tempo;
     pthread_exit (NULL);
 }
 
@@ -28,38 +32,41 @@ int main (int argc, char **argv) {
     g_n = atoi (argv[2]);
     g_modo = argv[3][0];
 
-    for (i = 0; i < g_d; i++) 
-        pista[i][0] = pista[i][1] = -1;
+    init ();
 
     /* Equipe A */
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < g_n; i++) {
         ord_a[i] = i;
-        ciclista[i].id = i;
-        ciclista[i].largada = 0;
-        ciclista[i].volta = i == 1 ? 0 : -1;
-        ciclista[i].pos = (largada - i + g_d) % g_d;
-        ciclista[i].pos_eq = i;
-        ciclista[i].quebrado = FALSE;
-        ciclista[i].meio = FALSE;
-        pista[ciclista[i].pos][0] = i;
-        pthread_create (&pid[i], NULL, thread_ciclista, &i);
+        cic[i].id = i;
+        cic[i].largada = 0;
+        cic[i].volta = i == 0 ? 0 : -1;
+        cic[i].pos = (cic[i].largada - i + g_d) % g_d;
+        cic[i].pos_eq = i;
+        cic[i].prox = (i + 1) % (2 * g_n);
+        cic[i].ant = (i - 1 + 2 * g_n) % (2 * g_n);
+        cic[i].quebrado = FALSE;
+        cic[i].meio = FALSE;
+        pista[cic[i].pos][0] = i;
+        pthread_create (&pid[i], NULL, ciclista, &i);
     }
 
     /* Equipe B */
-    for (i = n; i < 2 * n; i++) {
-        ord_b[i - n] = i;
-        ciclista[i].id = i;
-        ciclista[i].largada = d / 2;
-        ciclista[i].volta = i == 1 ? 0 : -1;
-        ciclista[i].pos = (largada - (i - n) + g_d) % g_d;
-        ciclista[i].pos_eq = i - n;
-        ciclista[i].quebrado = FALSE;
-        ciclista[i].meio = FALSE;
-        pista[ciclista[i].pos][0] = i;
-        pthread_create (&pid[i], NULL, thread_ciclista, &i);
+    for (i = g_n; i < 2 * g_n; i++) {
+        ord_b[i - g_n] = i;
+        cic[i].id = i;
+        cic[i].largada = g_d / 2;
+        cic[i].volta = i == g_n ? 0 : -1;
+        cic[i].pos = (cic[i].largada - (i - g_n) + g_d) % g_d;
+        cic[i].pos_eq = i - g_n;
+        cic[i].prox = (i + 1) % (2 * g_n);
+        cic[i].ant = (i - 1 + 2 * g_n) % (2 * g_n);
+        cic[i].quebrado = FALSE;
+        cic[i].meio = FALSE;
+        pista[cic[i].pos][0] = i;
+        pthread_create (&pid[i], NULL, ciclista, &i);
     }
 
-    for (i = 0; i < 2 * n; i++) pthread_join (pid[i], NULL);
+    for (i = 0; i < 2 * g_n; i++) pthread_join (pid[i], NULL);
 
     return EXIT_SUCCESS;    
 }
