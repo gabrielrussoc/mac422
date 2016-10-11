@@ -22,7 +22,7 @@ void atualiza_volta (int id) {
 int quebra (int id) {
     int ret;
     int v = cic[id].volta;
-    P (&mutex_q);
+    pthread_mutex_lock (&mutex_q);
     if (v == 0) ret = FALSE;
     else if (v % 4 != 0) ret = FALSE;
     else if (quebrado[v]) ret = FALSE;
@@ -40,7 +40,7 @@ int quebra (int id) {
     }
     else 
         ret = FALSE;
-    V (&mutex_q);
+    pthread_mutex_unlock (&mutex_q);
 
     return ret;
 }

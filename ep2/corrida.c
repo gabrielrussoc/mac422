@@ -8,6 +8,7 @@ void *ciclista (void *p) {
     int id = *((int *) p);
     int tempo = 0, aux;
     while (cic[id].volta < NVOLTAS) {
+        printf("Ciclista %d na pos %d\n",id,cic[id].pos);
         if (quebra (id)) break;
         cic[id].vel = sorteia_vel (id);
         aux = cic[id].pos;
