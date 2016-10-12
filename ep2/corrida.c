@@ -8,7 +8,6 @@ void *ciclista (void *p) {
     int id = *((int *) p);
     int tempo = 0, aux;
     while (cic[id].volta < NVOLTAS) {
-        printf("Ciclista %d na pos %d\n",id,cic[id].pos);
         if (quebra (id)) break;
         cic[id].vel = sorteia_vel (id);
         aux = cic[id].pos;
@@ -19,11 +18,12 @@ void *ciclista (void *p) {
         tempo++;
     }
     cic[id].final = tempo;
+    free (p);
     pthread_exit (NULL);
 }
 
 int main (int argc, char **argv) {
-    int i;
+    int i, *j;
     pthread_t pid[MAXN];
     if (argc != 4) {
         fprintf (stderr, "Uso: ./ep2 d n [v|u]\n");
@@ -40,7 +40,7 @@ int main (int argc, char **argv) {
         ord_a[i] = i;
         cic[i].id = i;
         cic[i].largada = 0;
-        cic[i].volta = i == 0 ? 0 : -1;
+        cic[i].volta = (i == 0 ? 0 : -1);
         cic[i].pos = (cic[i].largada - i + g_d) % g_d;
         cic[i].pos_eq = i;
         cic[i].prox = (i + 1) % (2 * g_n);
@@ -48,7 +48,9 @@ int main (int argc, char **argv) {
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
         pista[cic[i].pos][0] = i;
-        pthread_create (&pid[i], NULL, ciclista, &i);
+        j = malloc (sizeof (int));
+        *j = i;
+        pthread_create (&pid[i], NULL, ciclista, j);
     }
 
     /* Equipe B */
@@ -56,7 +58,7 @@ int main (int argc, char **argv) {
         ord_b[i - g_n] = i;
         cic[i].id = i;
         cic[i].largada = g_d / 2;
-        cic[i].volta = i == g_n ? 0 : -1;
+        cic[i].volta = (i == g_n ? 0 : -1);
         cic[i].pos = (cic[i].largada - (i - g_n) + g_d) % g_d;
         cic[i].pos_eq = i - g_n;
         cic[i].prox = (i + 1) % (2 * g_n);
@@ -64,7 +66,9 @@ int main (int argc, char **argv) {
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
         pista[cic[i].pos][0] = i;
-        pthread_create (&pid[i], NULL, ciclista, &i);
+        j = malloc (sizeof (int));
+        *j = i;
+        pthread_create (&pid[i], NULL, ciclista, j);
     }
 
     for (i = 0; i < 2 * g_n; i++) pthread_join (pid[i], NULL);

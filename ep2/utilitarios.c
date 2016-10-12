@@ -17,7 +17,7 @@ void init () {
     int i;
     pthread_mutex_init (&mutex_q, NULL);
     pthread_mutex_init (&mutex_pista, NULL);
-    for (i = 0; i < 2*g_n; i++) 
+    for (i = 0; i < 2 * g_n; i++) 
         sem_init (&sem[i], 0, 0);
     for (i = 0; i < NVOLTAS; i++) 
         quebrado[i] = FALSE;
@@ -36,9 +36,7 @@ void V (sem_t *sem) {
 
 void sincroniza (int id) {
     V (&sem[id]);
-    printf ("V em %d\n", id);
     P (&sem[cic[id].prox]);
-    printf ("P em %d\n", cic[id].prox);
 }
 
 void atualiza_pista (int ant, int id) {
