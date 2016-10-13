@@ -2,7 +2,6 @@
 #define _UTILITARIOS_H
 
 #include <pthread.h>
-#include <semaphore.h>
 #include "atleta.h"
 
 #define MAXN 1024
@@ -16,19 +15,24 @@ extern char g_modo;
 extern int g_n;
 extern int g_d;
 extern int g_acabou;
+extern int g_chegou;
 extern atleta cic[MAXN];
 extern int pista[MAXD][2];
 extern int ord_a[MAXN];
 extern int ord_b[MAXN];
 extern int quebrado[NVOLTAS];
 extern int restante[2];
-extern int continua[MAXN];
-extern int chegou[MAXN];
 extern pthread_mutex_t mutex_q;
 extern pthread_mutex_t mutex_pista;
+extern pthread_mutex_t mutex_sinc;
+
+extern pthread_cond_t barreira;
 
 void init ();
-void sincroniza (int id);
+void sincroniza (int saindo);
 void atualiza_pista (int ant, int id);
+void checa_vitoria ();
+void checa_terceiro ();
+
 
 #endif
