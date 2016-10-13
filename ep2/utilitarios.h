@@ -13,6 +13,7 @@
 
 extern char g_modo;
 extern int g_n;
+extern int g_correndo;
 extern int g_d;
 extern int g_acabou;
 extern int g_chegou;

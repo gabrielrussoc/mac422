@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "atleta.h"
 #include "utilitarios.h"
@@ -14,9 +15,47 @@ void atualiza_pos (int id) {
     }
 }
 
-void atualiza_volta (int id) {
-    if (cic[id].pos == cic[id].largada && !cic[id].meio)
+void atualiza_volta (int id, int tempo) {
+    if (cic[id].pos == cic[id].largada && !cic[id].meio) {
         cic[id].volta++;
+/*        {
+            int *ord, eq = 0, i;
+            if (id / g_n == 0) {
+                eq = 0;
+                ord = ord_a;
+            }
+            else {
+                eq = 1;
+                ord = ord_b;
+            }
+
+            if (ord[2] == id) { 
+                printf ("Terceiro colocado da equipe %c esta na volta: %d com tempo: %ds\n", 'A' + eq, cic[id].volta, tempo);
+                for (i = 0; i < 3; i++) {
+                    printf ("%d: ciclista %d \n", i + 1, ord_a[i]);
+                }
+            }
+        } */
+    }
+}
+
+void arruma_ordem (id) {
+    int *ord, pos = 0, i;
+    if (id / g_n == 0) 
+        ord = ord_a;
+    else
+        ord = ord_b;
+
+    for (i = 0; i < g_n; i++)
+        if (ord[i] == id) {
+            pos = i;
+            break;
+        }
+
+    for (i = pos + 1; i < g_n; i++) {
+        ord[i-1] = ord[i];
+    }
+    ord[g_n-1] = id;
 }
 
 int quebra (int id) {
@@ -31,11 +70,7 @@ int quebra (int id) {
         quebrado[v] = TRUE;
         restante[id / g_n]--;
         cic[id].quebrado = TRUE;
-
-        /* Atualiza a sincronizacao */
-        cic[cic[id].ant].prox = cic[id].prox;
-        cic[cic[id].prox].ant = cic[id].ant;
-
+        arruma_ordem (id);
         ret = TRUE;
     }
     else 

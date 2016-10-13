@@ -13,7 +13,7 @@ void *ciclista (void *p) {
         aux = cic[id].pos;
         atualiza_pos (id);
         atualiza_pista (aux, cic[id].pos);
-        atualiza_volta (id);
+        atualiza_volta (id, tempo);
         sincroniza (FALSE);
         tempo++;
     }
@@ -36,18 +36,14 @@ int main (int argc, char **argv) {
     g_modo = argv[3][0];
 
     init ();
-    g_n *= 2;
 
     /* Equipe A */
-    for (i = 0; i < g_n / 2; i++) {
+    for (i = 0; i < g_n; i++) {
         ord_a[i] = i;
         cic[i].id = i;
         cic[i].largada = 0;
         cic[i].volta = (i == 0 ? 0 : -1);
         cic[i].pos = (cic[i].largada - i + g_d) % g_d;
-        cic[i].pos_eq = i;
-        cic[i].prox = (i + 1) % g_n;
-        cic[i].ant = (i - 1 + g_n) % g_n;
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
         pista[cic[i].pos][0] = i;
@@ -57,15 +53,12 @@ int main (int argc, char **argv) {
     }
 
     /* Equipe B */
-    for (i = g_n / 2; i < g_n; i++) {
+    for (i = g_n; i < 2 * g_n; i++) {
         ord_b[i - g_n] = i;
         cic[i].id = i;
         cic[i].largada = g_d / 2;
-        cic[i].volta = (i == (g_n / 2) ? 0 : -1);
+        cic[i].volta = (i == g_n ? 0 : -1);
         cic[i].pos = (cic[i].largada - (i - g_n) + g_d) % g_d;
-        cic[i].pos_eq = i - g_n;
-        cic[i].prox = (i + 1) % g_n;
-        cic[i].ant = (i - 1 + g_n) % g_n;
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
         pista[cic[i].pos][0] = i;

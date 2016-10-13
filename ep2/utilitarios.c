@@ -3,6 +3,7 @@
 
 char g_modo;
 int g_n;
+int g_correndo;
 int g_d;
 int g_acabou;
 int g_chegou;
@@ -19,6 +20,7 @@ pthread_cond_t barreira;
 
 void init () {
     int i;
+    g_correndo = g_n * 2;
     pthread_mutex_init (&mutex_q, NULL);
     pthread_mutex_init (&mutex_pista, NULL);
     pthread_mutex_init (&mutex_sinc, NULL);
@@ -44,18 +46,16 @@ void checa_terceiro () {
 void checa_vitoria () {
     int i, a, b;
     if (!g_acabou) {
-        g_acabou = 3;
-        for (i = 0; i < g_n / 2 && g_acabou == 3; i++) {
-            a = cic[ord_a[i]].final;
-            b = cic[ord_b[i]].final;
-            if (a < b) g_acabou = 1; /* A ganhou */
-            else if (b < a) g_acabou = 2; /* B ganhou */
-        }
+        a = cic[ord_a[2]].final;
+        b = cic[ord_b[2]].final;
+        if (a < b) g_acabou = 1; /* A ganhou */
+        else if (b < a) g_acabou = 2; /* B ganhou */
+        else g_acabou = 3;
     }
     switch (g_acabou) {
         case 1:
             puts ("A ganhou!");
-            break;
+            break; 
         case 2:
             puts ("B ganhou!");
             break;
@@ -63,26 +63,28 @@ void checa_vitoria () {
             puts ("Empate!");
             break;
     }
-    puts ("Equipe A");
-    for (i = 0; i < g_n / 2; i++)
-        printf ("%d: ciclista %d (%ds)%s\n", i + 1, ord_a[i], cic[ord_a[i]].final, cic[ord_a[i]].quebrado ? "QUEBRADO" : "");
-    
-    puts ("Equipe B");
-    for (i = 0; i < g_n / 2; i++)
-        printf ("%d: ciclista %d (%ds)%s\n", i + 1, ord_b[i], cic[ord_b[i]].final, cic[ord_b[i]].quebrado ? "QUEBRADO" : "");
+    printf ("Equipe A %14c Equipe B\n", ' ');
+    for (i = 0; i < g_n; i++) {
+        printf ("%d: ciclista %d (%ds)%s%4c", i + 1, ord_a[i], cic[ord_a[i]].final, cic[ord_a[i]].quebrado ? "*" : "", ' ');
+        printf ("%d: ciclista %d (%ds)%s\n", i + 1, ord_b[i], cic[ord_b[i]].final, cic[ord_b[i]].quebrado ? "*" : "");
+    }
+    printf ("\n*: Ciclistas que quebraram\n");
+
 }
 
 void sincroniza (int saindo) {
     pthread_mutex_lock (&mutex_sinc);
-    if (saindo) g_n--;
-    g_chegou = (g_chegou + !saindo) % g_n;
-    if (g_chegou == 0) {
-        checa_terceiro ();
-        pthread_cond_broadcast (&barreira);
+    if (g_correndo != 1) {
+        if (saindo) g_correndo--;
+        g_chegou = (g_chegou + !saindo) % g_correndo;
+        if (g_chegou == 0) {
+            checa_terceiro ();
+            pthread_cond_broadcast (&barreira);
+        }
+        else
+            pthread_cond_wait (&barreira, &mutex_sinc);
+        pthread_mutex_unlock (&mutex_sinc);
     }
-    else
-        pthread_cond_wait (&barreira, &mutex_sinc);
-    pthread_mutex_unlock (&mutex_sinc);
 }
 
 void atualiza_pista (int ant, int id) {
