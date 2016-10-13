@@ -39,7 +39,7 @@ int main (int argc, char **argv) {
 
     /* Equipe A */
     for (i = 0; i < g_n; i++) {
-        ord_a[i] = i;
+        ord[0][i] = i;
         cic[i].id = i;
         cic[i].largada = 0;
         cic[i].volta = (i == 0 ? 0 : -1);
@@ -54,7 +54,7 @@ int main (int argc, char **argv) {
 
     /* Equipe B */
     for (i = g_n; i < 2 * g_n; i++) {
-        ord_b[i - g_n] = i;
+        ord[1][i - g_n] = i;
         cic[i].id = i;
         cic[i].largada = g_d / 2;
         cic[i].volta = (i == g_n ? 0 : -1);

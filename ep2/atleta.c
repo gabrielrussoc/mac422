@@ -16,51 +16,43 @@ void atualiza_pos (int id) {
 }
 
 void atualiza_volta (int id, int tempo) {
+    int eq = 0;
+
     if (cic[id].pos == cic[id].largada && !cic[id].meio) {
         cic[id].volta++;
-/*        {
-            int *ord, eq = 0, i;
-            if (id / g_n == 0) {
-                eq = 0;
-                ord = ord_a;
-            }
-            else {
-                eq = 1;
-                ord = ord_b;
-            }
-
-            if (ord[2] == id) { 
-                printf ("Terceiro colocado da equipe %c esta na volta: %d com tempo: %ds\n", 'A' + eq, cic[id].volta, tempo);
-                for (i = 0; i < 3; i++) {
-                    printf ("%d: ciclista %d \n", i + 1, ord_a[i]);
-                }
-            }
-        } */
+        eq = id / g_n;
+        if (ord[eq][2] == id) {
+        printf ("Terceiro colocado da equipe %c esta na volta: %d com tempo: %ds\n"
+                "1: ciclista %d\n"
+                "2: ciclista %d\n"
+                "3: ciclista %d\n",
+                'A' + eq, cic[id].volta, tempo, ord[eq][0], ord[eq][1], ord[eq][2]);
+        }
     }
 }
 
-void arruma_ordem (id) {
-    int *ord, pos = 0, i;
-    if (id / g_n == 0) 
-        ord = ord_a;
-    else
-        ord = ord_b;
+void arruma_ordem (int id) {
+    int pos = 0, i, eq;
+    eq = id / g_n;
 
     for (i = 0; i < g_n; i++)
-        if (ord[i] == id) {
+        if (ord[eq][i] == id) {
             pos = i;
             break;
         }
 
     for (i = pos + 1; i < g_n; i++) {
-        ord[i-1] = ord[i];
+        ord[eq][i-1] = ord[eq][i];
     }
-    ord[g_n-1] = id;
+    ord[eq][g_n-1] = id;
 }
 
 int quebra (int id) {
     int ret;
     int v = cic[id].volta;
+    time_t t;
+    srand((unsigned) time(&t));
+
     pthread_mutex_lock (&mutex_q);
     if (v == 0) ret = FALSE;
     else if (v % 4 != 0) ret = FALSE;
@@ -72,6 +64,8 @@ int quebra (int id) {
         cic[id].quebrado = TRUE;
         arruma_ordem (id);
         ret = TRUE;
+
+        printf ("Ciclista %d quebrou na volta %d\n", id, cic[id].volta);
     }
     else 
         ret = FALSE;
