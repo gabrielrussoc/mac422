@@ -34,4 +34,4 @@ Semáforo para quebrar
 
 Problemas
 
- 
+Muito rapido a seed e igual, entao todo mundo com a mesma velocidade; 

@@ -13,7 +13,7 @@ void *ciclista (void *p) {
         if (quebra (id)) break;
         aux = cic[id].pos;
         atualiza_pos (id);
-        atualiza_pista (aux, cic[id].pos);
+        atualiza_pista (aux, id);
         atualiza_volta (id, tempo);
         sincroniza (FALSE);
         tempo++;

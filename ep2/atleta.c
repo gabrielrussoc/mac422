@@ -4,24 +4,26 @@
 #include "utilitarios.h"
 
 int sorteia_vel (int id) {
-    time_t t;
+    double r;
     if (g_modo == 'u') return 1;
 
     /* Sorteia aleatoriamente entre 30km/h = 0 e 60km/h = 1 */
-    srand((unsigned) time(&t));
-    if (cic[id].volta > 0 && (double) rand () / RAND_MAX <= 0.5) 
+    r = (double) rand () / RAND_MAX;
+    printf ("%f\n", r);
+    if (cic[id].volta > 0 && r <= 0.5) 
         return 1;
     else 
         return 0; 
-    return 1;
 }
 
 void atualiza_pos (int id) {
     cic[id].pos = (cic[id].pos + cic[id].vel) % g_d;
     if (cic[id].meio && cic[id].vel == 0) {
-        cic[id].meio = 0;
+        cic[id].meio = FALSE;
         cic[id].pos = (cic[id].pos + 1) % g_d;
     }
+    else if (!cic[id].meio && cic[id].vel == 0)
+        cic[id].meio = TRUE;
 }
 
 void atualiza_volta (int id, int tempo) {
@@ -30,6 +32,7 @@ void atualiza_volta (int id, int tempo) {
     if (cic[id].pos == cic[id].largada && !cic[id].meio) {
         cic[id].volta++;
         cic[id].vel = sorteia_vel (id);
+        printf ("Ciclista %d, com velocidade %d\n", id, cic[id].vel);
         eq = id / g_n;
         if (ord[eq][2] == id) {
             printf ("Terceiro colocado da equipe %c esta na volta: %d com tempo: %ds\n"
