@@ -2,6 +2,7 @@
 #include "utilitarios.h"
 
 char g_modo;
+int g_debug;
 int g_n;
 int g_correndo;
 int g_d;
@@ -40,6 +41,14 @@ void checa_terceiro () {
         if (va > vb) g_acabou = 1; /* A ganhou */
         else if (va < vb) g_acabou = 2; /* B ganhou */
     }
+}
+
+void imprime_debug () {
+    int i;
+    fprintf (stderr, "Estado da pista:\n");
+    for (i = 0; i < g_d; i++)
+        fprintf (stderr, "%d: %d %d    ", i, pista[i][0], pista[i][1]);
+    fprintf (stderr, "\n\n");
 }
 
 void checa_vitoria () {
@@ -90,6 +99,8 @@ void sincroniza (int saindo) {
         g_chegou = (g_chegou + !saindo) % g_correndo;
         if (g_chegou == 0) {
             checa_terceiro ();
+            if (g_debug)
+                imprime_debug ();
             pthread_cond_broadcast (&barreira);
         }
         else

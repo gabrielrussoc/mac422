@@ -12,6 +12,7 @@
 #define FALSE 0
 
 extern char g_modo;
+extern int g_debug;
 extern int g_n;
 extern int g_correndo;
 extern int g_d;

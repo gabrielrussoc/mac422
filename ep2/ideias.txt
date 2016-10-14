@@ -31,3 +31,7 @@ PARALELISMO
 Semáforo pra pista[][]
 Sincronização no final de cada iteração
 Semáforo para quebrar
+
+Problemas
+
+ 

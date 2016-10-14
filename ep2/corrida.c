@@ -7,9 +7,10 @@
 void *ciclista (void *p) {
     int id = *((int *) p);
     int tempo = 0, aux;
+
+    cic[id].vel = sorteia_vel (id);
     while (cic[id].volta < NVOLTAS && !g_acabou) {
         if (quebra (id)) break;
-        cic[id].vel = sorteia_vel (id);
         aux = cic[id].pos;
         atualiza_pos (id);
         atualiza_pista (aux, cic[id].pos);
@@ -27,13 +28,16 @@ void *ciclista (void *p) {
 int main (int argc, char **argv) {
     int i, *j;
     pthread_t pid[MAXN];
-    if (argc != 4) {
-        fprintf (stderr, "Uso: ./ep2 d n [v|u]\n");
+    if (argc != 4 && argc != 5) {
+        fprintf (stderr, "Uso: ./ep2 d n [v|u] [d]\n");
         return EXIT_FAILURE;
     }
     g_d = atoi (argv[1]);
     g_n = atoi (argv[2]);
     g_modo = argv[3][0];
+    g_debug = 0;
+    if (argc == 5  && argv[4][0] == 'd')
+        g_debug = 1;
 
     init ();
 
