@@ -31,3 +31,7 @@ PARALELISMO
 Semáforo pra pista[][]
 Sincronização no final de cada iteração
 Semáforo para quebrar
+
+Problemas
+
+Muito rapido a seed e igual, entao todo mundo com a mesma velocidade; 
