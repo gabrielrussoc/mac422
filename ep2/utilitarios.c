@@ -38,8 +38,8 @@ void checa_terceiro () {
     if (cic[a3].pos == cic[b3].pos) {
         va = cic[a3].vel;
         vb = cic[b3].vel;
-        if (va > vb) g_acabou = 1; /* A ganhou */
-        else if (va < vb) g_acabou = 2; /* B ganhou */
+        if (va > vb) g_acabou = A_VITORIA;
+        else if (va < vb) g_acabou = B_VITORIA;
     }
 }
 
@@ -48,18 +48,18 @@ void checa_vitoria () {
     if (!g_acabou) {
         a = cic[ord_a[2]].final;
         b = cic[ord_b[2]].final;
-        if (a < b) g_acabou = 1; /* A ganhou */
-        else if (b < a) g_acabou = 2; /* B ganhou */
-        else g_acabou = 3;
+        if (a < b) g_acabou = A_VITORIA;
+        else if (b < a) g_acabou = B_VITORIA;
+        else g_acabou = EMPATE;
     }
     switch (g_acabou) {
-        case 1:
+        case A_VITORIA:
             puts ("A ganhou!");
             break; 
-        case 2:
+        case B_VITORIA:
             puts ("B ganhou!");
             break;
-        case 3:
+        case EMPATE:
             puts ("Empate!");
             break;
     }
@@ -83,8 +83,8 @@ void sincroniza (int saindo) {
         }
         else
             pthread_cond_wait (&barreira, &mutex_sinc);
-        pthread_mutex_unlock (&mutex_sinc);
     }
+    pthread_mutex_unlock (&mutex_sinc);
 }
 
 void atualiza_pista (int ant, int id) {

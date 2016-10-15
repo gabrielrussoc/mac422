@@ -39,7 +39,7 @@ void atualiza_volta (int id, int tempo) {
     }
 }
 
-void arruma_ordem (id) {
+void arruma_ordem (int id) {
     int *ord, pos = 0, i;
     if (id / g_n == 0) 
         ord = ord_a;
@@ -52,9 +52,8 @@ void arruma_ordem (id) {
             break;
         }
 
-    for (i = pos + 1; i < g_n; i++) {
-        ord[i-1] = ord[i];
-    }
+    for (i = pos; i < g_n - 1; i++)
+        ord[i] = ord[i + 1];
     ord[g_n-1] = id;
 }
 

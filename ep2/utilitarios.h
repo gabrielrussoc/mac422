@@ -11,6 +11,10 @@
 #define TRUE 1
 #define FALSE 0
 
+#define A_VITORIA 1
+#define B_VITORIA 2
+#define EMPATE 3
+
 extern char g_modo;
 extern int g_n;
 extern int g_correndo;
