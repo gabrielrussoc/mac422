@@ -3,6 +3,11 @@
 #include "atleta.h"
 #include "utilitarios.h"
 
+
+/* Arruma a ordem da equipe do ciclista id (quando ele
+ * quebre */ 
+void arruma_ordem (int id);
+
 int sorteia_vel (int id) {
     double r;
     if (g_modo == 'u') return 1;
@@ -44,22 +49,6 @@ void atualiza_volta (int id, int tempo) {
     }
 }
 
-void arruma_ordem (int id) {
-    int pos = 0, i, eq;
-    eq = id / g_n;
-
-    for (i = 0; i < g_n; i++)
-        if (ord[eq][i] == id) {
-            pos = i;
-            break;
-        }
-
-    for (i = pos + 1; i < g_n; i++) {
-        ord[eq][i-1] = ord[eq][i];
-    }
-    ord[eq][g_n-1] = id;
-}
-
 int quebra (int id) {
     int ret;
     int v = cic[id].volta;
@@ -85,4 +74,23 @@ int quebra (int id) {
     pthread_mutex_unlock (&mutex_q);
 
     return ret;
+}
+
+/*/// Funcoes Auxiliares ///////////////////////////////////////////////
+ * ////////////////////////////////////////////////////////////////// */
+
+void arruma_ordem (int id) {
+    int pos = 0, i, eq;
+    eq = id / g_n;
+
+    for (i = 0; i < g_n; i++)
+        if (ord[eq][i] == id) {
+            pos = i;
+            break;
+        }
+
+    for (i = pos + 1; i < g_n; i++) {
+        ord[eq][i-1] = ord[eq][i];
+    }
+    ord[eq][g_n-1] = id;
 }

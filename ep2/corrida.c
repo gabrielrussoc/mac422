@@ -4,6 +4,7 @@
 #include "atleta.h"
 #include "utilitarios.h"
 
+/* */
 void *ciclista (void *p) {
     int id = *((int *) p);
     int tempo = 0, aux;
@@ -72,6 +73,8 @@ int main (int argc, char **argv) {
     }
     for (i = 0; i < g_n; i++) pthread_join (pid[i], NULL);
     checa_vitoria ();
+
+    destroi ();
     
     return EXIT_SUCCESS;    
 }
