@@ -8,6 +8,7 @@
 void *ciclista (void *p) {
     int id = *((int *) p);
     int tempo = 0, aux;
+    int eq = id / g_n, i;
 
     cic[id].vel = sorteia_vel (id);
     while (cic[id].volta < NVOLTAS && !g_acabou) {
@@ -18,7 +19,15 @@ void *ciclista (void *p) {
             atualiza_pista (aux, id);
             atualiza_volta (id, tempo);
         }
+        printf ("ORDEM ANTES\n");
+        for (i = 0; i < g_n; i++)
+            printf ("%d ",ord[eq][i]);
+        putchar ('\n');
         sincroniza (FALSE);
+        printf ("ORDEM DEPOIS\n");
+        for (i = 0; i < g_n; i++)
+            printf ("%d ",ord[eq][i]);
+        putchar ('\n');
         tempo++;
     }
     /* Retira da Pista */

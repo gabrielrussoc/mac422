@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "atleta.h"
 #include "utilitarios.h"
 
@@ -64,16 +65,16 @@ int atualiza_pos (int id) {
 
     if (oid != -1 && npos != cic[id].pos) {
         oeq = oid / g_n;
-        if (oeq == eq && cic[id].pos_eq == cic[oid].pos_eq - 1) {
-            pthread_mutex_lock (&mutex_ord[eq]);
+        pthread_mutex_lock (&mutex_ord[eq]);
+        if (oeq == eq && cic[id].pos_eq == cic[oid].pos_eq + 1) {
             ord[eq][cic[id].pos_eq] = oid;
             cic[id].pos_eq--;
             ord[eq][cic[oid].pos_eq] = id;
             cic[oid].pos_eq++;
-            pthread_mutex_unlock (&mutex_ord[eq]);
-        } else if (oeq != eq)
-            checa_terceiro (id, oid);
-
+        } else if (oeq != eq) {
+            /*checa_terceiro (id, oid); */
+        }
+        pthread_mutex_unlock (&mutex_ord[eq]);
     }
 
     cic[id].pos = npos;
@@ -108,7 +109,6 @@ void remove_cic (int id) {
     faixa = (pista[cic[id].pos][1] == id);
     pista[cic[id].pos][faixa] = -1;
     pthread_mutex_unlock (&mutex_pista);
-
 }
 
 int quebra (int id) {
