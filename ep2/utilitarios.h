@@ -14,6 +14,7 @@
 #define EMPATE 3
 
 /* Variaveis globais */
+extern int g_end;
 extern char g_modo;
 extern int g_debug;
 extern int g_n;

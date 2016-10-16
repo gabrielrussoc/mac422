@@ -46,6 +46,7 @@ void checa_terceiro ();
  * quebrou ou nao */
 int quebra (int id);
 
+/* Remove o ciclista id da pista */
 void remove_cic (int id);
 
 #endif

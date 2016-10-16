@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "utilitarios.h"
 
+int g_end;
 char g_modo;
 int g_debug;
 int g_n;
@@ -41,7 +42,8 @@ void init () {
     /* Inicando as variaves globais */
     g_correndo = g_n * 2;
     g_chegou = 0;
-
+    g_end = 0;
+    
     /* Inicando os mutexes */
     pthread_mutex_init (&mutex_q, NULL);
     pthread_mutex_init (&mutex_pista, NULL);

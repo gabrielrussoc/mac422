@@ -104,15 +104,6 @@ void atualiza_volta (int id, int tempo) {
     }
 }
 
-void remove_cic (int id) {
-    int faixa;
-
-    pthread_mutex_lock (&mutex_pista);
-    faixa = (pista[cic[id].pos][1] == id);
-    pista[cic[id].pos][faixa] = -1;
-    pthread_mutex_unlock (&mutex_pista);
-}
-
 int quebra (int id) {
     int ret;
     int v = cic[id].volta;
@@ -138,9 +129,20 @@ int quebra (int id) {
     return ret;
 }
 
+void remove_cic (int id) {
+    int faixa;
+
+    pthread_mutex_lock (&mutex_pista);
+    faixa = (pista[cic[id].pos][1] == id);
+    pista[cic[id].pos][faixa] = -1;
+    pthread_mutex_unlock (&mutex_pista);
+}
+
+
 
 void sincroniza (int saindo) {
     static int i = 0;
+
     pthread_mutex_lock (&mutex_sinc);
     if (g_correndo != 1) {
         if (saindo) g_correndo--;
@@ -148,6 +150,7 @@ void sincroniza (int saindo) {
         if (g_chegou == 0) {
             if (g_debug && !g_acabou)
                 imprime_debug (i++);
+            if (g_acabou) g_end = 1;
             pthread_cond_broadcast (&barreira);
         }
         else

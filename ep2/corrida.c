@@ -19,6 +19,7 @@ void *ciclista (void *p) {
         }
         tempo++;
         sincroniza (FALSE); /* problema de sincronizacao quando acaba no caso especial */
+        if (g_end) break;
     }
     /* Retira da Pista */
     remove_cic (id);
