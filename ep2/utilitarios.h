@@ -37,25 +37,20 @@ extern pthread_mutex_t mutex_sinc;
 /* Variavel de condicao para a barreira de sincronizacao */
 extern pthread_cond_t barreira;
 
+/* Devolve o maximo entre a e b */
+int max (int a, int b);
+
+/* Troca o conteudo dos ponteiros a e b */
+void swap (int *a, int *b);
+
 /* Inicializa as variaveis e vetores globais e os mutexes */
 void init ();
 
 /* Libera as variaveis e vetores globais e os mutexes */
 void destroi ();
 
-/* Funcao que faz a barreira de sincronizacao das threads e
- * verifica se ha um vencedor (se o terceiro ciclista de uma 
- * equipe ultrapassa o terceiro da outra equipe).
- * Recebe um interio que significa se a thread que alcancou a 
- * barreira sera destruida ou nao, para manter a sicronizacao */
-void sincroniza (int saindo);
+/* Imprime as informacoes necessarias para o modo de debug */
+void imprime_debug ();
 
-/* Recebe o id de um ciclista e a sua posicao na iteracao, atualiza
- * o vetor que representa a pista */
-void atualiza_pista (int ant, int id);
-
-/* Verifica que equipe venceu a corrida e imprime o resultado na saida
- * padrao */
-void checa_vitoria ();
 
 #endif

@@ -3,57 +3,97 @@
 #include "atleta.h"
 #include "utilitarios.h"
 
-
 /* Arruma a ordem da equipe do ciclista id (quando ele
  * quebre */ 
 void arruma_ordem (int id);
 
 int sorteia_vel (int id) {
-    double r;
+    int i, eq, ret;
+
+    /* Velocidade uniforme */
     if (g_modo == 'u') return 1;
 
-    /* Sorteia aleatoriamente entre 30km/h = 0 e 60km/h = 1 */
-    r = (double) rand () / RAND_MAX;
-    printf ("%f\n", r);
-    if (cic[id].volta > 0 && r <= 0.5) 
-        return 1;
-    else 
-        return 0; 
+    /* Todos andam a 30km/h na primeira volta */
+    if (cic[id].volta == 0) return 0;
+
+    /* Sorteia aleatoriamente entre 30km/h e 60km/h */
+    eq = id / g_n;
+    for (i = cic[id].pos_eq - 1; i >= 0 && cic[ord[eq][i]].volta == cic[id].volta; i--)
+        if (cic[ord[eq][i]].proibe) {
+            cic[id].proibe = FALSE;
+            return 0;
+        }
+
+    ret = (((double) rand () / RAND_MAX) < .5); 
+    cic[id].proibe = !(ret | cic[id].proibe);
+    return ret;
 }
 
-void atualiza_pos (int id) {
-    cic[id].pos = (cic[id].pos + cic[id].vel) % g_d;
+int atualiza_pos (int id) {
+    int npos = (cic[id].pos + cic[id].vel) % g_d;
+    int nmeio = cic[id].meio;
+    int ret = TRUE, eq, faixa, oid, oeq;
+
+    /* Calcula proxima posicao no caso de 30km/h */
     if (cic[id].meio && cic[id].vel == 0) {
-        cic[id].meio = FALSE;
-        cic[id].pos = (cic[id].pos + 1) % g_d;
+        nmeio = FALSE;
+        npos = (cic[id].pos + 1) % g_d;
+    } else if (!cic[id].meio && cic[id].vel == 0)
+        nmeio = TRUE;
+    
+    /* Verifica se ha espaco para o ciclista se mover */
+    pthread_mutex_lock (&mutex_pista);
+    if (pista[npos][0] != -1 && pista[npos][1] != -1)
+        if (npos != cic[id].pos)
+            ret = FALSE;
+    pthread_mutex_unlock (&mutex_pista);
+    if (!ret) return ret;
+
+    /* Atualiza a posicao relativa na equipe */
+    eq = id / g_n;
+    faixa = (pista[cic[id].pos][1] == id);
+    oid = pista[cic[id].pos][faixa];
+    if (oid != -1 && npos != cic[id].pos) {
+        oeq = oid / g_n;
+        if (oeq == eq && cic[id].pos_eq == cic[oid].pos_eq - 1) {
+            swap (&ord[eq][cic[id].pos_eq], &ord[eq][cic[oid].pos_eq]);
+            swap (&cic[id].pos_eq, &cic[oid].pos_eq);
+        }
     }
-    else if (!cic[id].meio && cic[id].vel == 0)
-        cic[id].meio = TRUE;
+
+    cic[id].pos = npos;
+    cic[id].meio = nmeio;
+    return ret;
 }
 
 void atualiza_volta (int id, int tempo) {
-    int eq = 0;
+    int eq = 0, aux;
 
     if (cic[id].pos == cic[id].largada && !cic[id].meio) {
         cic[id].volta++;
         cic[id].vel = sorteia_vel (id);
-        printf ("Ciclista %d, com velocidade %d\n", id, cic[id].vel);
         eq = id / g_n;
+        /* Imprime os tres primeiros no caso do terceiro colocado cruzar a linha */
         if (ord[eq][2] == id) {
-            printf ("Terceiro colocado da equipe %c esta na volta: %d com tempo: %ds\n"
+            printf ("Terceiro colocado da equipe %c esta na volta %d com tempo: %ds\n"
                     "1: ciclista %d\n"
                     "2: ciclista %d\n"
                     "3: ciclista %d\n",
                     'A' + eq, cic[id].volta, tempo, ord[eq][0], ord[eq][1], ord[eq][2]);
        } 
     }
+    /* Tira um ciclista da pista caso ele termine a corrida */
+    if (cic[id].volta == NVOLTAS) {
+        pthread_mutex_lock (&mutex_pista);
+        aux = (pista[cic[id].pos][1] == id);
+        pista[cic[id].pos][aux] = -1;
+        pthread_mutex_unlock (&mutex_pista);
+    }
 }
 
 int quebra (int id) {
     int ret;
     int v = cic[id].volta;
-    time_t t;
-    srand((unsigned) time(&t));
 
     pthread_mutex_lock (&mutex_q);
     if (v == 0) ret = FALSE;
@@ -67,7 +107,7 @@ int quebra (int id) {
         arruma_ordem (id);
         ret = TRUE;
 
-        printf ("Ciclista %d quebrou na volta %d\n", id, cic[id].volta);
+        printf ("QUEBROU: Ciclista %d na volta %d\n", id, cic[id].volta);
     }
     else 
         ret = FALSE;
@@ -76,8 +116,91 @@ int quebra (int id) {
     return ret;
 }
 
+
+void sincroniza (int saindo) {
+    static int i = 0;
+    pthread_mutex_lock (&mutex_sinc);
+    if (g_correndo != 1) {
+        if (saindo) g_correndo--;
+        g_chegou = (g_chegou + !saindo) % g_correndo;
+        if (g_chegou == 0) {
+            checa_terceiro ();
+            if (g_debug)
+                imprime_debug (i++);
+            pthread_cond_broadcast (&barreira);
+        }
+        else
+            pthread_cond_wait (&barreira, &mutex_sinc);
+    }
+    pthread_mutex_unlock (&mutex_sinc);
+}
+
+void atualiza_pista (int ant, int id) {
+    int prox = cic[id].pos;
+    int faixa;
+
+    pthread_mutex_lock (&mutex_pista);
+    faixa = (pista[ant][1] == id);
+    pista[ant][faixa] = -1;
+    faixa = (pista[prox][1] == -1);
+    pista[prox][faixa] = id;
+    pthread_mutex_unlock (&mutex_pista);
+}
+
+void checa_vitoria () {
+    int i, a, b;
+    if (!g_acabou) {
+        a = cic[ord[0][2]].final;
+        b = cic[ord[1][2]].final;
+        if (a < b) g_acabou = A_VITORIA; /* A ganhou */
+        else if (b < a) g_acabou = B_VITORIA; /* B ganhou */
+        else g_acabou = EMPATE;
+    }
+    
+    puts ("\nCorrida finalizada. Resultado:\n");
+    switch (g_acabou) {
+        case A_VITORIA:
+            printf ("%10cA ganhou!\n", ' ');
+            break; 
+        case B_VITORIA:
+            printf ("%10cB ganhou!\n", ' ');
+            break;
+        case EMPATE:
+            printf ("%10cEmpate!\n", ' ');
+            break;
+    }
+    printf ("\nEquipe A\n");
+    for (i = 0; i < g_n; i++) {
+        printf ("%d: ciclista %d (%ds)", i + 1, ord[0][i], cic[ord[0][i]].final);
+        if (cic[ord[0][i]].quebrado) 
+            printf ("* (%d volta)", cic[ord[0][i]].volta);
+        printf ("\n");
+    } 
+    printf ("\nEquipe B\n");
+    for (i = 0; i < g_n; i++) {
+        printf ("%d: ciclista %d (%ds)", i + 1, ord[1][i], cic[ord[1][i]].final);
+        if (cic[ord[1][i]].quebrado) 
+            printf ("* (%d volta)", cic[ord[1][i]].volta);
+        printf ("\n");
+    } 
+
+    printf ("\n* (i): Ciclista quebrou na i-esima volta\n");
+
+}
+
 /*/// Funcoes Auxiliares ///////////////////////////////////////////////
  * ////////////////////////////////////////////////////////////////// */
+
+void checa_terceiro () {
+    int a3 = ord[0][2], b3 = ord[1][2], va, vb;
+    if (cic[a3].pos == cic[b3].pos && max (cic[a3].volta, cic[b3].volta) != NVOLTAS) {
+        va = cic[a3].vel;
+        vb = cic[b3].vel;
+        if (va > vb) g_acabou = 1; /* A ganhou */
+        else if (va < vb) g_acabou = 2; /* B ganhou */
+    }
+}
+
 
 void arruma_ordem (int id) {
     int pos = 0, i, eq;
@@ -91,7 +214,9 @@ void arruma_ordem (int id) {
 
     for (i = pos + 1; i < g_n; i++) {
         ord[eq][i-1] = ord[eq][i];
+        cic[ord[eq][i-1]].pos_eq--;
     }
     ord[eq][g_n-1] = id;
+    cic[id].pos_eq = g_n;
 }
 

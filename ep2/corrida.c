@@ -13,15 +13,17 @@ void *ciclista (void *p) {
     while (cic[id].volta < NVOLTAS && !g_acabou) {
         if (quebra (id)) break;
         aux = cic[id].pos;
-        atualiza_pos (id);
-        atualiza_pista (aux, id);
-        atualiza_volta (id, tempo);
+        if (atualiza_pos (id)) {
+            atualiza_pista (aux, id);
+            atualiza_volta (id, tempo);
+        }
         sincroniza (FALSE);
         tempo++;
     }
     sincroniza (TRUE);
 
     cic[id].final = tempo;
+    printf ("%d terminou em %d\n",id,tempo);
     free (p);
     pthread_exit (NULL);
 }
@@ -51,8 +53,10 @@ int main (int argc, char **argv) {
         cic[i].largada = 0;
         cic[i].volta = (i == 0 ? 0 : -1);
         cic[i].pos = (cic[i].largada - i + g_d) % g_d;
+        cic[i].pos_eq = i;
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
+        cic[i].proibe = TRUE;
         pista[cic[i].pos][0] = i;
         j = malloc (sizeof (int));
         *j = i;
@@ -66,8 +70,10 @@ int main (int argc, char **argv) {
         cic[i].largada = g_d / 2;
         cic[i].volta = (i == g_n ? 0 : -1);
         cic[i].pos = (cic[i].largada - (i - g_n) + g_d) % g_d;
+        cic[i].pos_eq = i - g_n;
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
+        cic[i].proibe = TRUE;
         pista[cic[i].pos][0] = i;
         j = malloc (sizeof (int));
         *j = i;
