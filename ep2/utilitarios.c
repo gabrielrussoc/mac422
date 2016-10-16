@@ -94,3 +94,46 @@ void imprime_debug (int iter) {
     fprintf (stderr, "\n");
 }
 
+void checa_vitoria () {
+    int i, a, b;
+    if (!g_acabou) {
+        a = cic[ord[0][2]].final;
+        b = cic[ord[1][2]].final;
+        if (a < b) g_acabou = A_VITORIA;
+        else if (b < a) g_acabou = B_VITORIA;
+        else g_acabou = EMPATE;
+    }
+
+    puts ("\nCorrida finalizada. Resultado:\n");
+    switch (g_acabou) {
+        case A_VITORIA:
+            printf ("%10cA ganhou!\n", ' ');
+            break; 
+        case B_VITORIA:
+            printf ("%10cB ganhou!\n", ' ');
+            break;
+        case EMPATE:
+            printf ("%10cEmpate!\n", ' ');
+            break;
+    }
+    printf ("\nEquipe A\n");
+    for (i = 0; i < g_n; i++) {
+        if (cic[ord[0][i]].quebrado) 
+            printf ("QUEBRADO: ciclista %d na volta %d", i+1, cic[ord[0][i]].volta);
+        else 
+            printf ("%d: ciclista %d (%d u.t.)", i + 1, ord[0][i], cic[ord[0][i]].final);
+        printf ("\n");
+    } 
+    printf ("\nEquipe B\n");
+    for (i = 0; i < g_n; i++) {
+        if (cic[ord[1][i]].quebrado) 
+            printf ("QUEBRADO: ciclista %d na volta %d", i, cic[ord[1][i]].volta);
+        else 
+            printf ("%d: ciclista %d (%d u.t.)", i + 1, ord[1][i], cic[ord[1][i]].final);
+        printf ("\n");
+    } 
+    printf ("\n1 u.t. = 60 ms\n");
+
+}
+
+

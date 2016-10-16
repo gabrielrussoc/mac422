@@ -143,46 +143,6 @@ void sincroniza (int saindo) {
     pthread_mutex_unlock (&mutex_sinc);
 }
 
-void checa_vitoria () {
-    int i, a, b;
-    if (!g_acabou) {
-        a = cic[ord[0][2]].final;
-        b = cic[ord[1][2]].final;
-        if (a < b) g_acabou = A_VITORIA;
-        else if (b < a) g_acabou = B_VITORIA;
-        else g_acabou = EMPATE;
-    }
-
-    puts ("\nCorrida finalizada. Resultado:\n");
-    switch (g_acabou) {
-        case A_VITORIA:
-            printf ("%10cA ganhou!\n", ' ');
-            break; 
-        case B_VITORIA:
-            printf ("%10cB ganhou!\n", ' ');
-            break;
-        case EMPATE:
-            printf ("%10cEmpate!\n", ' ');
-            break;
-    }
-    printf ("\nEquipe A\n");
-    for (i = 0; i < g_n; i++) {
-        printf ("%d: ciclista %d (%d u.t.)", i + 1, ord[0][i], cic[ord[0][i]].final);
-        if (cic[ord[0][i]].quebrado) 
-            printf (" (QUEBRADO na volta %d) ", cic[ord[0][i]].volta);
-        printf ("\n");
-    } 
-    printf ("\nEquipe B\n");
-    for (i = 0; i < g_n; i++) {
-        printf ("%d: ciclista %d (%d u.t.)", i + 1, ord[1][i], cic[ord[1][i]].final);
-        if (cic[ord[1][i]].quebrado) 
-            printf (" (QUEBRADO na volta %d) ", cic[ord[1][i]].volta);
-        printf ("\n");
-    } 
-    printf ("\n1 u.t. = 60 ms\n");
-
-}
-
 int quebra (int id) {
     int ret;
     int v = cic[id].volta;

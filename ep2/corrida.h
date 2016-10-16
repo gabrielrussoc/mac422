@@ -35,10 +35,6 @@ void atualiza_pista (int ant, int id);
  * barreira sera destruida ou nao */
 void sincroniza (int saindo);
 
-/* Verifica qual equipe venceu a corrida e imprime o resultado na saida
- * padrao */
-void checa_vitoria ();
-
 /* Determina se o cilcista id ira "quebrar", devolve se ele 
  * quebrou */
 int quebra (int id);

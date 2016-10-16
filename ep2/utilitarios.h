@@ -49,5 +49,9 @@ void destroi ();
  * no instante iter */
 void imprime_debug (int iter);
 
+/* Verifica qual equipe venceu a corrida e imprime o resultado na saida
+ * padrao */
+void checa_vitoria ();
+
 #endif
 
