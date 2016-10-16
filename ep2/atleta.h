@@ -8,6 +8,7 @@ typedef struct {
     int vel, meio;
     int quebrado;
     int proibe;
+    int acc;
 } atleta;
 
 /* Recebe o identificador de um ciclista e devolve a

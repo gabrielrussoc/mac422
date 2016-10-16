@@ -8,34 +8,23 @@
 void *ciclista (void *p) {
     int id = *((int *) p);
     int tempo = 0, aux;
-    int eq = id / g_n, i;
 
     cic[id].vel = sorteia_vel (id);
-    while (cic[id].volta < NVOLTAS && !g_acabou) {
+    while (cic[id].volta < NVOLTAS) {
         if (quebra (id)) break;
         aux = cic[id].pos;
         if (atualiza_pos (id)) {
-            /*fprintf (stderr, "%d conseguiu andar para %d\n",id,cic[id].pos);*/
             atualiza_pista (aux, id);
             atualiza_volta (id, tempo);
         }
-        printf ("ORDEM ANTES\n");
-        for (i = 0; i < g_n; i++)
-            printf ("%d ",ord[eq][i]);
-        putchar ('\n');
-        sincroniza (FALSE);
-        printf ("ORDEM DEPOIS\n");
-        for (i = 0; i < g_n; i++)
-            printf ("%d ",ord[eq][i]);
-        putchar ('\n');
         tempo++;
+        sincroniza (FALSE); /* problema de sincronizacao quando acaba no caso especial */
     }
     /* Retira da Pista */
     remove_cic (id);
     sincroniza (TRUE);
 
     cic[id].final = tempo;
-    printf ("%d terminou em %d\n",id,tempo);
     free (p);
     pthread_exit (NULL);
 }
@@ -69,6 +58,7 @@ int main (int argc, char **argv) {
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
         cic[i].proibe = FALSE;
+        cic[i].acc = 0;
         pista[cic[i].pos][0] = i;
         j = malloc (sizeof (int));
         *j = i;
@@ -86,12 +76,13 @@ int main (int argc, char **argv) {
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
         cic[i].proibe = FALSE;
+        cic[i].acc = 0;
         pista[cic[i].pos][0] = i;
         j = malloc (sizeof (int));
         *j = i;
         pthread_create (&tid[i], NULL, ciclista, j);
     }
-    for (i = 0; i < g_n; i++) pthread_join (tid[i], NULL);
+    for (i = 0; i < 2 * g_n; i++) pthread_join (tid[i], NULL);
     checa_vitoria ();
 
     destroi ();

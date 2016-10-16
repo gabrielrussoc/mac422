@@ -66,19 +66,21 @@ int atualiza_pos (int id) {
     if (oid != -1 && npos != cic[id].pos) {
         oeq = oid / g_n;
         pthread_mutex_lock (&mutex_ord[eq]);
-        if (oeq == eq && cic[id].pos_eq == cic[oid].pos_eq + 1) {
+        if (oeq == eq && cic[id].pos_eq == cic[oid].pos_eq + 1 && 
+                                        cic[id].volta == cic[oid].volta) {
             ord[eq][cic[id].pos_eq] = oid;
             cic[id].pos_eq--;
             ord[eq][cic[oid].pos_eq] = id;
             cic[oid].pos_eq++;
         } else if (oeq != eq) {
-            /*checa_terceiro (id, oid); */
+            checa_terceiro (id, oid);
         }
         pthread_mutex_unlock (&mutex_ord[eq]);
     }
 
     cic[id].pos = npos;
     cic[id].meio = nmeio;
+    cic[id].acc += 1 + cic[id].vel;
     return ret;
 }
 
@@ -144,7 +146,7 @@ void sincroniza (int saindo) {
         if (saindo) g_correndo--;
         g_chegou = (g_chegou + !saindo) % g_correndo;
         if (g_chegou == 0) {
-            if (g_debug)
+            if (g_debug && !g_acabou)
                 imprime_debug (i++);
             pthread_cond_broadcast (&barreira);
         }
@@ -211,8 +213,10 @@ void checa_vitoria () {
  * ////////////////////////////////////////////////////////////////// */
 
 void checa_terceiro (int id, int oid) {
-    if (cic[id].pos_eq == 2 && cic[oid].pos_eq == 2)
-        g_acabou = 3;
+    if (cic[id].pos_eq == 2 && cic[oid].pos_eq == 2 && cic[id].acc > cic[oid].acc) {
+        if (id / g_n == 0) g_acabou = A_VITORIA;
+        else g_acabou = B_VITORIA;
+    }
 }
 
 
