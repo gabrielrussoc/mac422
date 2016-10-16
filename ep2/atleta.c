@@ -14,7 +14,7 @@ int sorteia_vel (int id) {
     if (g_modo == 'u') return 1;
 
     /* Todos andam a 30km/h na primeira volta */
-    if (cic[id].volta == 0) return 0;
+    if (cic[id].volta <= 0) return 0;
 
     /* Sorteia aleatoriamente entre 30km/h e 60km/h */
     eq = id / g_n;
@@ -203,16 +203,9 @@ void checa_terceiro () {
 
 
 void arruma_ordem (int id) {
-    int pos = 0, i, eq;
+    int i, eq;
     eq = id / g_n;
-
-    for (i = 0; i < g_n; i++)
-        if (ord[eq][i] == id) {
-            pos = i;
-            break;
-        }
-
-    for (i = pos + 1; i < g_n; i++) {
+    for (i = cic[id].pos_eq + 1; i < g_n; i++) {
         ord[eq][i-1] = ord[eq][i];
         cic[ord[eq][i-1]].pos_eq--;
     }

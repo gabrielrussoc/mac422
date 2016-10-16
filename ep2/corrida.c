@@ -14,6 +14,7 @@ void *ciclista (void *p) {
         if (quebra (id)) break;
         aux = cic[id].pos;
         if (atualiza_pos (id)) {
+            fprintf (stderr, "%d conseguiu andar para %d\n",id,cic[id].pos);
             atualiza_pista (aux, id);
             atualiza_volta (id, tempo);
         }
@@ -56,7 +57,7 @@ int main (int argc, char **argv) {
         cic[i].pos_eq = i;
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
-        cic[i].proibe = TRUE;
+        cic[i].proibe = FALSE;
         pista[cic[i].pos][0] = i;
         j = malloc (sizeof (int));
         *j = i;
@@ -73,7 +74,7 @@ int main (int argc, char **argv) {
         cic[i].pos_eq = i - g_n;
         cic[i].quebrado = FALSE;
         cic[i].meio = FALSE;
-        cic[i].proibe = TRUE;
+        cic[i].proibe = FALSE;
         pista[cic[i].pos][0] = i;
         j = malloc (sizeof (int));
         *j = i;

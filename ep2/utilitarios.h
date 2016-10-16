@@ -52,5 +52,5 @@ void destroi ();
 /* Imprime as informacoes necessarias para o modo de debug */
 void imprime_debug ();
 
-
 #endif
+
