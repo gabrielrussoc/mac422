@@ -45,5 +45,7 @@ void checa_terceiro ();
  * quebrou ou nao */
 int quebra (int id);
 
+void remove_cic (int id);
+
 #endif
 

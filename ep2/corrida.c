@@ -21,6 +21,8 @@ void *ciclista (void *p) {
         sincroniza (FALSE);
         tempo++;
     }
+    /* Retira da Pista */
+    remove_cic (id);
     sincroniza (TRUE);
 
     cic[id].final = tempo;
@@ -31,7 +33,7 @@ void *ciclista (void *p) {
 
 int main (int argc, char **argv) {
     int i, *j;
-    pthread_t *pid;
+    pthread_t *tid;
 
     if (argc != 4 && argc != 5) {
         fprintf (stderr, "Uso: ./ep2 d n [v|u] [d]\n");
@@ -45,7 +47,7 @@ int main (int argc, char **argv) {
         g_debug = 1;
 
     init ();
-    pid = malloc (2 * g_n * sizeof (pthread_t));
+    tid = malloc (2 * g_n * sizeof (pthread_t));
 
     /* Equipe A */
     for (i = 0; i < g_n; i++) {
@@ -61,7 +63,7 @@ int main (int argc, char **argv) {
         pista[cic[i].pos][0] = i;
         j = malloc (sizeof (int));
         *j = i;
-        pthread_create (&pid[i], NULL, ciclista, j);
+        pthread_create (&tid[i], NULL, ciclista, j);
     }
 
     /* Equipe B */
@@ -78,9 +80,9 @@ int main (int argc, char **argv) {
         pista[cic[i].pos][0] = i;
         j = malloc (sizeof (int));
         *j = i;
-        pthread_create (&pid[i], NULL, ciclista, j);
+        pthread_create (&tid[i], NULL, ciclista, j);
     }
-    for (i = 0; i < g_n; i++) pthread_join (pid[i], NULL);
+    for (i = 0; i < g_n; i++) pthread_join (tid[i], NULL);
     checa_vitoria ();
 
     destroi ();

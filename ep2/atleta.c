@@ -51,14 +51,22 @@ int atualiza_pos (int id) {
 
     /* Atualiza a posicao relativa na equipe */
     eq = id / g_n;
+
+    pthread_mutex_lock (&mutex_pista);
     faixa = (pista[cic[id].pos][1] == id);
-    oid = pista[cic[id].pos][faixa];
+    oid = pista[cic[id].pos][!faixa];
+    pthread_mutex_unlock (&mutex_pista);
+
     if (oid != -1 && npos != cic[id].pos) {
         oeq = oid / g_n;
         if (oeq == eq && cic[id].pos_eq == cic[oid].pos_eq - 1) {
-            swap (&ord[eq][cic[id].pos_eq], &ord[eq][cic[oid].pos_eq]);
-            swap (&cic[id].pos_eq, &cic[oid].pos_eq);
-        }
+            ord[eq][cic[id].pos_eq] = oid;
+            cic[id].pos_eq--;
+            ord[eq][cic[oid].pos_eq] = id;
+            cic[oid].pos_eq++;
+        } else if (oeq != eq)
+            checa_terceiro (id, oid);
+       
     }
 
     cic[id].pos = npos;
@@ -67,7 +75,7 @@ int atualiza_pos (int id) {
 }
 
 void atualiza_volta (int id, int tempo) {
-    int eq = 0, aux;
+    int eq = 0;
 
     if (cic[id].pos == cic[id].largada && !cic[id].meio) {
         cic[id].volta++;
@@ -82,13 +90,16 @@ void atualiza_volta (int id, int tempo) {
                     'A' + eq, cic[id].volta, tempo, ord[eq][0], ord[eq][1], ord[eq][2]);
        } 
     }
-    /* Tira um ciclista da pista caso ele termine a corrida */
-    if (cic[id].volta == NVOLTAS) {
-        pthread_mutex_lock (&mutex_pista);
-        aux = (pista[cic[id].pos][1] == id);
-        pista[cic[id].pos][aux] = -1;
-        pthread_mutex_unlock (&mutex_pista);
-    }
+}
+
+void remove_cic (int id) {
+    int faixa;
+
+    pthread_mutex_lock (&mutex_pista);
+    faixa = (pista[cic[id].pos][1] == id);
+    pista[cic[id].pos][faixa] = -1;
+    pthread_mutex_unlock (&mutex_pista);
+    
 }
 
 int quebra (int id) {
@@ -124,7 +135,6 @@ void sincroniza (int saindo) {
         if (saindo) g_correndo--;
         g_chegou = (g_chegou + !saindo) % g_correndo;
         if (g_chegou == 0) {
-            checa_terceiro ();
             if (g_debug)
                 imprime_debug (i++);
             pthread_cond_broadcast (&barreira);
@@ -191,14 +201,9 @@ void checa_vitoria () {
 /*/// Funcoes Auxiliares ///////////////////////////////////////////////
  * ////////////////////////////////////////////////////////////////// */
 
-void checa_terceiro () {
-    int a3 = ord[0][2], b3 = ord[1][2], va, vb;
-    if (cic[a3].pos == cic[b3].pos && max (cic[a3].volta, cic[b3].volta) != NVOLTAS) {
-        va = cic[a3].vel;
-        vb = cic[b3].vel;
-        if (va > vb) g_acabou = 1; /* A ganhou */
-        else if (va < vb) g_acabou = 2; /* B ganhou */
-    }
+void checa_terceiro (int id, int oid) {
+    if (cic[id].pos_eq == 2 && cic[oid].pos_eq == 2)
+        g_acabou = 3;
 }
 
 
@@ -210,6 +215,6 @@ void arruma_ordem (int id) {
         cic[ord[eq][i-1]].pos_eq--;
     }
     ord[eq][g_n-1] = id;
-    cic[id].pos_eq = g_n;
+    cic[id].pos_eq = g_n-1;
 }
 
