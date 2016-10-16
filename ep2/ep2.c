@@ -4,7 +4,7 @@
 #include "corrida.h"
 #include "utilitarios.h"
 
-/* */
+/* Thread que representa um ciclista */
 void *ciclista (void *p) {
     int id = *((int *) p);
     int tempo = 0, aux;
