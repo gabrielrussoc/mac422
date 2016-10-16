@@ -1,18 +1,18 @@
 CC=gcc
 CFLAGS=-Wall -ansi -O2 -pedantic -pthread
 
-all: corrida.out clear
+all: ep2 clear
 
 clear:
 	rm *.o
 
-corrida.out: corrida.o atleta.o utilitarios.o
+ep2: ep2.o corrida.o utilitarios.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-corrida.o: corrida.c
+ep2.o: ep2.c
 	$(CC) $(CFLAGS) $< -c -o $@
 
-atleta.o: atleta.c atleta.h
+corrida.o: corrida.c corrida.h
 	$(CC) $(CFLAGS) $< -c -o $@
 
 utilitarios.o: utilitarios.c utilitarios.h

@@ -2,7 +2,7 @@
 #define _UTILITARIOS_H
 
 #include <pthread.h>
-#include "atleta.h"
+#include "corrida.h"
 
 #define NVOLTAS 16
 
@@ -14,8 +14,8 @@
 #define EMPATE 3
 
 /* Variaveis globais */
-extern int g_end;
 extern char g_modo;
+extern int g_ultra3;
 extern int g_debug;
 extern int g_n;
 extern int g_correndo;
@@ -39,20 +39,15 @@ extern pthread_mutex_t mutex_sinc;
 /* Variavel de condicao para a barreira de sincronizacao */
 extern pthread_cond_t barreira;
 
-/* Devolve o maximo entre a e b */
-int max (int a, int b);
-
-/* Troca o conteudo dos ponteiros a e b */
-void swap (int *a, int *b);
-
 /* Inicializa as variaveis e vetores globais e os mutexes */
-void init ();
+void inicializa ();
 
 /* Libera as variaveis e vetores globais e os mutexes */
 void destroi ();
 
-/* Imprime as informacoes necessarias para o modo de debug */
-void imprime_debug ();
+/* Imprime as informacoes necessarias para o modo de debug 
+ * no instante iter */
+void imprime_debug (int iter);
 
 #endif
 

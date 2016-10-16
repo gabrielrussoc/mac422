@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include "utilitarios.h"
 
-int g_end;
 char g_modo;
+int g_ultra3;
 int g_debug;
 int g_n;
 int g_correndo;
@@ -21,19 +21,7 @@ pthread_mutex_t mutex_pista;
 pthread_mutex_t mutex_sinc;
 pthread_cond_t barreira;
 
-int max (int a, int b) {
-    if (a > b) return a;
-    return b;
-}
-
-void swap (int *a, int *b) {
-    int aux;
-    aux = *a;
-    *a = *b;
-    *b = aux;
-}
-
-void init () {
+void inicializa () {
     int i;
     
     /* Inicializa a semente do rand com o tempo atual */
@@ -42,7 +30,8 @@ void init () {
     /* Inicando as variaves globais */
     g_correndo = g_n * 2;
     g_chegou = 0;
-    g_end = 0;
+    g_acabou = 0;
+    g_ultra3 = FALSE;
     
     /* Inicando os mutexes */
     pthread_mutex_init (&mutex_q, NULL);
@@ -77,6 +66,8 @@ void destroi () {
     pthread_mutex_destroy (&mutex_q);
     pthread_mutex_destroy (&mutex_pista);
     pthread_mutex_destroy (&mutex_sinc);
+    pthread_mutex_destroy (&mutex_ord[0]);
+    pthread_mutex_destroy (&mutex_ord[1]);
     pthread_cond_destroy (&barreira);
 
     /* Liberando as vetores globais */
@@ -91,11 +82,15 @@ void destroi () {
     free (ord);
 }
 
-void imprime_debug (int tempo) {
+void imprime_debug (int iter) {
     int i;
-    fprintf (stderr, "Estado da pista apos o instante %d:\n", tempo);
-    for (i = 0; i < g_d; i++)
-        fprintf (stderr, "%d: %d(%d) %d(%d)    ", i, pista[i][0], pista[i][0] != -1 ? cic[pista[i][0]].vel : 9, pista[i][1], pista[i][1] != -1 ? cic[pista[i][1]].vel : 9);
-    fprintf (stderr, "\n\n");
+    fprintf (stderr, "Estado da pista no instante %d:\n", iter);
+    for (i = 0; i < g_d; i++) {
+        fprintf (stderr, "%d:", i);
+        if (pista[i][0] != -1) fprintf (stderr, " %d", pista[i][0]);
+        if (pista[i][1] != -1) fprintf (stderr, " %d", pista[i][1]);
+        fprintf (stderr, "\n");
+    }
+    fprintf (stderr, "\n");
 }
 
