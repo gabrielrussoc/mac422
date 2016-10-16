@@ -18,11 +18,16 @@ int sorteia_vel (int id) {
 
     /* Sorteia aleatoriamente entre 30km/h e 60km/h */
     eq = id / g_n;
+
+    pthread_mutex_lock (&mutex_ord[eq]);
+    /* Verifica se esta limitado por alguem em sua frente */
     for (i = cic[id].pos_eq - 1; i >= 0 && cic[ord[eq][i]].volta == cic[id].volta; i--)
         if (cic[ord[eq][i]].proibe) {
             cic[id].proibe = FALSE;
+            pthread_mutex_unlock (&mutex_ord[eq]);
             return 0;
         }
+    pthread_mutex_unlock (&mutex_ord[eq]);
 
     ret = (((double) rand () / RAND_MAX) < .5); 
     cic[id].proibe = !(ret | cic[id].proibe);
@@ -60,13 +65,15 @@ int atualiza_pos (int id) {
     if (oid != -1 && npos != cic[id].pos) {
         oeq = oid / g_n;
         if (oeq == eq && cic[id].pos_eq == cic[oid].pos_eq - 1) {
+            pthread_mutex_lock (&mutex_ord[eq]);
             ord[eq][cic[id].pos_eq] = oid;
             cic[id].pos_eq--;
             ord[eq][cic[oid].pos_eq] = id;
             cic[oid].pos_eq++;
+            pthread_mutex_unlock (&mutex_ord[eq]);
         } else if (oeq != eq)
             checa_terceiro (id, oid);
-       
+
     }
 
     cic[id].pos = npos;
@@ -82,13 +89,15 @@ void atualiza_volta (int id, int tempo) {
         cic[id].vel = sorteia_vel (id);
         eq = id / g_n;
         /* Imprime os tres primeiros no caso do terceiro colocado cruzar a linha */
+        pthread_mutex_lock (&mutex_ord[eq]);
         if (ord[eq][2] == id) {
             printf ("Terceiro colocado da equipe %c esta na volta %d com tempo: %ds\n"
                     "1: ciclista %d\n"
                     "2: ciclista %d\n"
                     "3: ciclista %d\n",
                     'A' + eq, cic[id].volta, tempo, ord[eq][0], ord[eq][1], ord[eq][2]);
-       } 
+        } 
+        pthread_mutex_unlock (&mutex_ord[eq]);
     }
 }
 
@@ -99,7 +108,7 @@ void remove_cic (int id) {
     faixa = (pista[cic[id].pos][1] == id);
     pista[cic[id].pos][faixa] = -1;
     pthread_mutex_unlock (&mutex_pista);
-    
+
 }
 
 int quebra (int id) {
@@ -166,7 +175,7 @@ void checa_vitoria () {
         else if (b < a) g_acabou = B_VITORIA; /* B ganhou */
         else g_acabou = EMPATE;
     }
-    
+
     puts ("\nCorrida finalizada. Resultado:\n");
     switch (g_acabou) {
         case A_VITORIA:
@@ -210,11 +219,13 @@ void checa_terceiro (int id, int oid) {
 void arruma_ordem (int id) {
     int i, eq;
     eq = id / g_n;
+    pthread_mutex_lock (&mutex_ord[eq]);
     for (i = cic[id].pos_eq + 1; i < g_n; i++) {
         ord[eq][i-1] = ord[eq][i];
         cic[ord[eq][i-1]].pos_eq--;
     }
     ord[eq][g_n-1] = id;
     cic[id].pos_eq = g_n-1;
+    pthread_mutex_unlock (&mutex_ord[eq]);
 }
 

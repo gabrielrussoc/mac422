@@ -14,6 +14,7 @@ int **pista;
 int **ord;
 int quebrado[NVOLTAS];
 int restante[2];
+pthread_mutex_t mutex_ord[2];
 pthread_mutex_t mutex_q;
 pthread_mutex_t mutex_pista;
 pthread_mutex_t mutex_sinc;
@@ -45,6 +46,8 @@ void init () {
     pthread_mutex_init (&mutex_q, NULL);
     pthread_mutex_init (&mutex_pista, NULL);
     pthread_mutex_init (&mutex_sinc, NULL);
+    pthread_mutex_init (&mutex_ord[0], NULL);
+    pthread_mutex_init (&mutex_ord[1], NULL);
     pthread_cond_init (&barreira, NULL);
 
     /* Inicando as vetores globais */

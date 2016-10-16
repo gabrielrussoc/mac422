@@ -30,6 +30,7 @@ extern int quebrado[NVOLTAS];
 extern int restante[2];
 
 /* Mutexes */
+extern pthread_mutex_t mutex_ord[2];
 extern pthread_mutex_t mutex_q;
 extern pthread_mutex_t mutex_pista;
 extern pthread_mutex_t mutex_sinc;
