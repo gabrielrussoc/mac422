@@ -54,4 +54,3 @@ void imprime_debug (int iter);
 void checa_vitoria ();
 
 #endif
-
