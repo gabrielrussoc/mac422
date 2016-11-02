@@ -1,25 +1,32 @@
-import memory as mem
+from memory import Memory
 import utility as ut
 import math
 
-def init (f):
-    a = f.readline ().split (' ');
-    fisica = mem.Memory (a[0] , '/tmp/ep3.mem') 
-    virtual = mem.Memory (a[1] , '/tmp/ep3.vir') 
+def run (trace, m_alg, p_alg, inter):
+    file = open (trace, "r")
+    a = list (map (int, file.readline ().split ()))
     s = a[2]
     p = a[3]
-    bitmap = [False] * a[1] / s;
+    physical = Memory (a[0], '/tmp/ep3.mem', s) 
+    virtual = Memory (a[1], '/tmp/ep3.vir', s) 
+    proc = ut.Process (file.readline ().split ())
+    ut.running += 1
+    time = proc.t0
+    while True:
+        while proc != None and proc.t0 == time:
+            virtual.insert (proc, m_alg)
+            atr = file.readline ().split ()
+            if atr != []:
+                proc = ut.Process (atr)
+                ut.running += 1
+            else:
+                proc = None
 
-def run (f, algM, algP):
-    fo = open (f, "r");
-    time = 0
-    init (fo)
-    proc = ut.Process (fo)
-    # le as variaveis globais 
-    while ():
-        while proc.t0 == time:
-           virtual.insert (Math.ceil (proc.b / s), proc.name, algP)
-           #insere no vetor de pripridadde
-           proc = Process (fo)
+        if time % inter == 0:
+            virtual.show ()
+
+        if proc == None and ut.running == 3:
+            break
+
         time += 1
-    fo.close ()
+    file.close ()

@@ -1,0 +1,14 @@
+Show esta errado (estamos imprimindo todos os pids desde sempre na tabela do inicio)
+Condicao de parada da execucao esta errada (ut.running teria que ser comparado com 0)
+Encontrar estrutura para guardar os processos ordenados (heap, provavelmente)
+Remover os processos
+Algoritmos de paginacao
+Revisao geral + comentarios + codigo mais bonito
+
+perguntar pro daniel:
+
+pode botar dependencia (bitarray) ?
+unidade de alocacao divide o tamanho total da memoria?
+tem que imprimir nome?
+tem que tirar da memoria virtual ou deixa os restos mortais e so muda o bitarray?
+a memoria dos programas eh continua na virtual?
