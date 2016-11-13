@@ -6,4 +6,5 @@ ep1/ep1
 ep1/ep1sh
 ep2/ep2
 *.out
-
+*.pyc
+__pycache__
