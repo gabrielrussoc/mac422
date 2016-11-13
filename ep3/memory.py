@@ -14,7 +14,7 @@ class Memory:
     def __del__ (self):
         self.file.close ()
         
-    def write (self,  position, quantity, value):
+    def write (self, position, quantity, value):
         self.file.seek (position * ut.INT_BYTES)
         for i in range (quantity):
             self.file.write (value.to_bytes(ut.INT_BYTES, byteorder = 'big', signed = True))
@@ -26,17 +26,22 @@ class Memory:
     def insert (self, process, algorithm):
         p_size = math.ceil (process.size / self.aloc)
         if algorithm == 1:
-            self.first_fit (process.pid, p_size)
+            return self.first_fit (process.pid, p_size)
         elif algorithm == 2:
-            self.next_fit(process.pid, p_size)
+            return self.next_fit(process.pid, p_size)
         elif algorithm == 3:
-            self.best_fit (process.pid, p_size)
+            return self.best_fit (process.pid, p_size)
         else:
-            self.worst_fit (process.pid, p_size)
+            return self.worst_fit (process.pid, p_size)
+
+    def remove (self, process):
+        base = process.base
+        s = self.aloc
+        p_size = math.ceil (process.size / self.aloc) 
+        self.bitmap[base : base + p_size] = p_size * bitarray ('0') 
+        self.write (base * s, p_size * s, -1)
 
     def show (self):
-        for i in range (ut.pid_count):
-            print (ut.pid_name[i] + ' = ' + str (i))
         for i in range (self.size):
             print (str (i) + ': ' + str (self.read (i)))
 
@@ -47,7 +52,8 @@ class Memory:
             if self.bitmap[i : i + p_size] == arr:
                 self.write (i * s, p_size * s, pid)
                 self.bitmap[i : i + p_size] = p_size * bitarray ('1')
-                break
+                return i
+                
     
     def next_fit (self, pid, p_size):
         arr = p_size * bitarray ('0')
@@ -60,7 +66,7 @@ class Memory:
                 self.write (i * s, p_size * s, pid)
                 self.bitmap[i : i + p_size] = p_size * bitarray ('1')
                 self.counter = i + p_size - 1
-                break;
+                return i
             i += 1
     
     def best_fit (self, pid, p_size):
@@ -83,6 +89,7 @@ class Memory:
 
         self.write (best_pos * s, p_size * s, pid)
         self.bitmap[best_pos : best_pos + p_size] = p_size * bitarray ('1')
+        return best_pos
     
     def worst_fit (self, pid, p_size):
         worst_pos = 0
@@ -104,4 +111,5 @@ class Memory:
 
         self.write (worst_pos * s, p_size * s, pid)
         self.bitmap[worst_pos : worst_pos + p_size] = p_size * bitarray ('1')
+        return worst_pos 
 

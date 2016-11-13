@@ -1,11 +1,9 @@
-Show esta errado (estamos imprimindo todos os pids desde sempre na tabela do inicio)
-Condicao de parada da execucao esta errada (ut.running teria que ser comparado com 0)
-Encontrar estrutura para guardar os processos ordenados (heap, provavelmente)
-Remover os processos
+Show esta errado  - O que fazer para identificar pids?
 Algoritmos de paginacao
 Revisao geral + comentarios + codigo mais bonito
+Talvez ep3.py como executavel seja ma ideia. Dificil saber caminho do python3.
 
-perguntar pro daniel:
+perguntar pro daniel (ja foi respondido, veja paca):
 
 pode botar dependencia (bitarray) ?
 unidade de alocacao divide o tamanho total da memoria?
