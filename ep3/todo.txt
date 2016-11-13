@@ -1,0 +1,3 @@
+estrutura que guarde os processos
+fazer classe processo?
+passa o tem
