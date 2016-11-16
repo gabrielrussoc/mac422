@@ -6,16 +6,20 @@ class Pages:
     def __init__ (self, physical, virtual, p_alg, timeline):
         self.physical = physical
         self.virtual = virtual
-        self.size = int (virtual.size / virtual.p)
+        self.p = virtual.p
+        self.size = int (virtual.size / self.p)
         self.p_alg = p_alg
-        
-        # Vetor que marca a posicao da memoria fisica se esta presente e -1 c.c
-        self.present = [-1] * self.size 
+        self.present = bitarray ('0') * self.size
         self.reset_r ()
+
+        # Posicao fantasma, usada para inicializar as estruturas
+        self.present.append (bitarray ('0'))
+        self.r.append (bitarray ('0'))
+
         self.alg_init (timeline)
 
     def decode (self, base, pos):
-        return base + int (pos / self.physical.p) 
+        return base + int (pos / self.p) 
 
     def access (self, proc):
         pos = proc.next_pos ()
@@ -54,11 +58,22 @@ class Pages:
             for ac in proc.access[0]:
                 self.optimal_counter[self.decode (proc.base, ac)] += 1
 
-    def second_chance_init (self, timeline):
+    def second_chance_init (self):
         size = int (self.physical.size / self.physical.p)
         self.queue = Queue ()
         for i in range (size):
-            self.queue.put (i)
+            # fila de pair (posicao na tabela de paginas, posicao na memfisica)
+            self.queue.put ([self.size, i])
+
+    def clock_init (self):
+        size = int (self.physical.size / self.physical.p)
+        self.clk = []
+        for i in range (size):
+            self.clk.append ([self.size, i])
+        self.it = 0
+        
+
+        
 
     def optimal (self):
         ...
@@ -66,22 +81,46 @@ class Pages:
     def second_chance (self, page):
         while True:
             frame = self.queue.get ()
-            if not self.r[frame]: 
+            if not self.r[frame[0]]]: 
 
                 # Insere
-                self.queue.put (page)
+                self.queue.put ([page, frame[1]])
                 self.r[page] = 1
-                self.present[page] = self.present[frame]
-                physical.write (self.present[page] * self.pysh
+                self.present[page] = 1
+                    # obter pid da page
+                self.physical.write (frame[1] * self.p, pid)
 
                 # Remove
-                self.present[frame] = -1
-                
+                self.present[frame[0]] = 0
+                self.r[frame[0]] = 0
 
+                break;
+            else:
+                self.r[frame[0]] = 0
+                self.queue.put (frame)
         
 
-    def clock (self):
-        ...
+    def clock (self, page):
+        while True:
+            frame = self.clk[self.it]
+            if not self.r[frame[0]]:
+                # Insere
+                self.clk[self.it][0] = page
+                self.r[page] = 1
+                self.present[page] = 1
+                    # obter pid da page
+                self.physical.write (frame[1] * self.p, pid
+                
+                # Remove
+                self.present[frame[0]] = 0
+                self.r[frame[0]] = 0
+
+                self.it = (self.it + 1) % self.size
+
+                break
+            else:
+                self.r[frame[0]] = 0
+                self.it = (self.it + 1) % self.size
 
     def lru (self):
         ...
