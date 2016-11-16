@@ -41,10 +41,10 @@ class Memory:
         base = process.base
         p_size = math.ceil (process.size / self.p)
         self.bitmap[base : base + p_size] = p_size * bitarray ('0') 
-        self.write (base * int (self.p / self.s), p_size * int (self.p / self.s), -1)
+        self.write (base * self.p, p_size * self.p, -1)
 
     def show (self):
-        for i in range (int (self.size / self.s)):
+        for i in range (0, int (self.size), s):
             print (str (i) + ': ' + str (self.read (i)))
 
     #p_size eh a quantidade de paginas do processo
@@ -52,7 +52,7 @@ class Memory:
         arr = p_size * bitarray ('0')
         for i in range (len (self.bitmap) - p_size + 1):
             if self.bitmap[i : i + p_size] == arr:
-                self.write (i * int (self.p / self.s), p_size * int (self.p / self.s), pid)
+                self.write (i * self.p, p_size * self.p, pid)
                 self.bitmap[i : i + p_size] = p_size * bitarray ('1')
                 return i
                 
@@ -64,7 +64,7 @@ class Memory:
             if i > len (self.bitmap) - p_size:
                 i = 0
             if self.bitmap[i : i + p_size] == arr:
-                self.write (i * int (self.p / self.s), p_size * int (self.p / self.s), pid)
+                self.write (i * self.p, p_size * self.p, pid)
                 self.bitmap[i : i + p_size] = p_size * bitarray ('1')
                 self.counter = i + p_size - 1
                 return i
@@ -87,7 +87,7 @@ class Memory:
             best_size = j - i
             best_pos = i
 
-        self.write (best_pos * int (self.p / self.s), p_size * int (self.p / self.s), pid)
+        self.write (best_pos * self.p, p_size * self.p, pid)
         self.bitmap[best_pos : best_pos + p_size] = p_size * bitarray ('1')
         return best_pos
     
@@ -108,7 +108,7 @@ class Memory:
             worst_size = j - i
             worst_pos = i
 
-        self.write (worst_pos * int (self.p / self.s), p_size * int (self.p / self.s), pid)
+        self.write (worst_pos * self.p, p_size * self.p, pid)
         self.bitmap[worst_pos : worst_pos + p_size] = p_size * bitarray ('1')
         return worst_pos 
 

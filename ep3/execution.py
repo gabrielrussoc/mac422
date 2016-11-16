@@ -23,6 +23,7 @@ def run (trace, m_alg, p_alg, inter):
     pgt = Pages (physical, virtual, p_alg)
     time = index = 0
     timeline = load (trace)
+    #imprime a tabela de pid
     if p_alg == 1:
         pgt.optimal_init (timeline)
     while True:
