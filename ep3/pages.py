@@ -10,7 +10,7 @@ class Pages:
         self.present = bitarray ('0') * self.size 
         self.reset_r ()
 
-    def decode (base, pos):
+    def decode (self, base, pos):
         return base + int (pos / self.physical.p) 
 
     def access (self, proc):
@@ -20,7 +20,7 @@ class Pages:
             page_fix (page)
         self.r[page] = 1;
 
-    def page_fix (page):
+    def page_fix (self, page):
         a = p_alg
         if a == 1:
             ...
@@ -31,24 +31,24 @@ class Pages:
         else:
             ...
 
-    def reset_r ():
+    def reset_r (self):
         self.r = bitarray ('0') * self.size
 
-    def optimal_init (timeline):
+    def optimal_init (self, timeline):
         self.optimal_counter = [0] * self.size
         for proc in timeline:
             for ac in proc.access[0]:
-                self.optimal_counter[decode (proc.base, ac)] += 1
+                self.optimal_counter[self.decode (proc.base, ac)] += 1
 
-    def optimal ():
+    def optimal (self):
         ...
 
-    def second_chance ():
+    def second_chance (self):
         ...
 
-    def clock ():
+    def clock (self):
         ...
 
-    def lru ():
+    def lru (self):
         ...
 

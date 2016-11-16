@@ -6,7 +6,7 @@ class Memory:
     def __init__ (self, size, file, s, p):
         self.size = size
         self.file = open (file, 'w+b')
-        self.write (0, int (size / s), -1)
+        self.write (0, size, -1)
         self.s = s
         self.p = p
         self.bitmap = int (size / p) * bitarray ('0')
@@ -15,14 +15,13 @@ class Memory:
     def __del__ (self):
         self.file.close ()
         
-    #Cada linha represeta um bloco de tamanho s
-    def write (self, block, quantity, value):
-        self.file.seek (block * ut.INT_BYTES)
+    def write (self, pos, quantity, value):
+        self.file.seek (pos * ut.INT_BYTES)
         for i in range (quantity):
             self.file.write (value.to_bytes (ut.INT_BYTES, byteorder = 'big', signed = True))
 
-    def read (self, block):
-        self.file.seek (block * ut.INT_BYTES)
+    def read (self, pos):
+        self.file.seek (pos * ut.INT_BYTES)
         return int.from_bytes (self.file.read (ut.INT_BYTES), byteorder = 'big', signed = True) 
 
     #Retorna a pagina inicial do processo
@@ -44,7 +43,7 @@ class Memory:
         self.write (base * self.p, p_size * self.p, -1)
 
     def show (self):
-        for i in range (0, int (self.size), s):
+        for i in range (0, int (self.size)):
             print (str (i) + ': ' + str (self.read (i)))
 
     #p_size eh a quantidade de paginas do processo

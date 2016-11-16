@@ -15,8 +15,8 @@ while True:
         if len (line) != 2:
             print ('Uso: carrega <arquivo>')
         else:
-            f = line[1]
             print ('Carregando arquivo: ' + line[1])
+            f = open (line[1])
     elif line[0] == 'espaco':
         if len (line) != 2:
             print ('Uso: espaco <num>')

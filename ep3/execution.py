@@ -4,16 +4,19 @@ import utility as ut
 import math
 
 def load (trace):
-    file = open (trace, "r")
     ret = []
-    for line in file:
-        ret.append (ut.Process (file.readline ().split ()))
-    file.close ()
+    for line in trace:
+        ret.append (ut.Process (line.split ()))
     return ret
+
+def show_pids (timeline):
+    for proc in timeline:
+        print (proc.name + ' (' + str (proc.pid) + ')')
+
 
 def run (trace, m_alg, p_alg, inter):
     #total virtual s p
-    a = list (map (int, file.readline ().split ()))
+    a = list (map (int, trace.readline ().split ()))
     s = int (a[2])
     p = int (a[3])
     physical = Memory (a[0], '/tmp/ep3.mem', s, p) 
@@ -23,7 +26,7 @@ def run (trace, m_alg, p_alg, inter):
     pgt = Pages (physical, virtual, p_alg)
     time = index = 0
     timeline = load (trace)
-    #imprime a tabela de pid
+    show_pids (timeline)
     if p_alg == 1:
         pgt.optimal_init (timeline)
     while True:
@@ -36,7 +39,7 @@ def run (trace, m_alg, p_alg, inter):
 
         while pq.get_size () > 0 and pq.top ().next_time () == time:
             ac_proc = pq.top ()
-            pgt.access (ac_proc) 
+            #pgt.access (ac_proc) 
             pq.pop ()
 
         while rq.get_size () > 0 and rq.top ().tf == time:
@@ -44,8 +47,13 @@ def run (trace, m_alg, p_alg, inter):
             rq.pop ()
         
         if time % inter == 0:
+            print ('Instante ' + str (time))
+            print ('Memoria virtual')
             virtual.show ()
+            print (20 * '-')
+            print ('Memoria fisica')
             physical.show ()
+            print ()
 
         if index == len (timeline) and rq.get_size () == 0:
             break

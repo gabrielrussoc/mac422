@@ -1,19 +1,16 @@
 import heapq
 
 INT_BYTES = 4
-running = 0
-pid_name = []
 
 class Process:
     pid_count = 0
     
-
     #atr eh uma lista de strings
     #t0 nome tf b p1 t1 ... pn tn
     def __init__ (self, atr):
         self.t0 = int (atr[0])
         self.pid = Process.pid_count
-        pid_name.append (atr[1])
+        self.name = atr[1]
         Process.pid_count += 1
         self.tf = int (atr[2])
         self.base = 0
