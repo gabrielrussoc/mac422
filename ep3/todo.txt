@@ -1,5 +1,7 @@
-Show esta errado  - O que fazer para identificar pids?
-Algoritmos de paginacao
+Algoritmos de paginacao (falta o optimal) - NABO
+LRU tem problema (quando atualizar?)
+Devemos escrever -1 na memoria fisica?
+Melhorar o print
 Revisao geral + comentarios + codigo mais bonito
 Talvez ep3.py como executavel seja ma ideia. Dificil saber caminho do python3.
 

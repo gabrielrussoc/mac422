@@ -23,10 +23,11 @@ def run (trace, m_alg, p_alg, inter):
     virtual = Memory (a[1], '/tmp/ep3.vir', s, p) 
     pq = ut.ProcessQueue ()
     rq = ut.RunningQueue ()
-    pgt = Pages (physical, virtual, p_alg)
     time = index = 0
     timeline = load (trace)
     show_pids (timeline)
+    pgt = Pages (physical, virtual, p_alg, timeline)
+    zero_r = 999
     if p_alg == 1:
         pgt.optimal_init (timeline)
     while True:
@@ -39,11 +40,13 @@ def run (trace, m_alg, p_alg, inter):
 
         while pq.get_size () > 0 and pq.top ().next_time () == time:
             ac_proc = pq.top ()
-            #pgt.access (ac_proc) 
+            pgt.access (ac_proc) 
             pq.pop ()
 
         while rq.get_size () > 0 and rq.top ().tf == time:
-            virtual.remove (rq.top ())
+            proc = rq.top ()
+            virtual.remove (proc)
+            pgt.remove (proc)
             rq.pop ()
         
         if time % inter == 0:
@@ -55,7 +58,13 @@ def run (trace, m_alg, p_alg, inter):
             physical.show ()
             print ()
 
+        if time % zero_r == 0:
+            pgt.reset_r ()
+
         if index == len (timeline) and rq.get_size () == 0:
             break
 
         time += 1
+        if p_alg == 4:
+            pgt.lru_update ()
+

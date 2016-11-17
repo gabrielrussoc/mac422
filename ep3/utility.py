@@ -1,6 +1,11 @@
 import heapq
 
 INT_BYTES = 4
+DEBUG = 1
+
+def debug (s):
+    if DEBUG:
+        print (s)
 
 class Process:
     pid_count = 0
