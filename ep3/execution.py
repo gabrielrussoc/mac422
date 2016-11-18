@@ -32,13 +32,10 @@ def run (trace, m_alg, p_alg, inter):
     rq = ut.RunningQueue ()
     time = index = 0
     timeline = load (trace)
-    pgt = Pages (physical, virtual, p_alg, timeline)
+    pgt = Pages (physical, virtual, p_alg)
     zero_r = 999
 
     show_pids (timeline)
-
-    if p_alg == 1:
-        pgt.optimal_init (timeline)
 
     while True:
         # Chegada de processos
@@ -80,6 +77,4 @@ def run (trace, m_alg, p_alg, inter):
             break
 
         time += 1
-        if p_alg == 4:
-            pgt.lru_update ()
-
+        

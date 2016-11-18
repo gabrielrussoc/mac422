@@ -5,7 +5,7 @@ from queue import Queue
 import utility as ut
 
 class Pages:
-    def __init__ (self, physical, virtual, p_alg, timeline):
+    def __init__ (self, physical, virtual, p_alg):
         self.physical = physical
         self.virtual = virtual
         self.p = virtual.p
@@ -18,12 +18,15 @@ class Pages:
         self.present.append (bitarray ('0'))
         self.r.append (bitarray ('0'))
 
-        self.alg_init (timeline)
+        self.alg_init ()
 
     def decode (self, base, pos):
         return base + int (pos / self.p) 
 
     def access (self, proc):
+        # Cada acesso atualiza a estrutura da LRU
+        if self.p_alg == 4:
+            self.lru_update ()
         pos = proc.next_pos ()
         page = self.decode (proc.base, pos)
         if not self.present[page]:
@@ -34,7 +37,7 @@ class Pages:
         ut.debug ('Page fault!')
         a = self.p_alg
         if a == 1:
-            pass
+            self.optimal (proc)
         elif a == 2:
             self.second_chance (proc)
         elif a == 3:
@@ -42,10 +45,10 @@ class Pages:
         else:
             self.lru (proc)
 
-    def alg_init (self, timeline):
+    def alg_init (self):
         a = self.p_alg
         if a == 1:
-            self.optimal_init (timeline)
+            self.optimal_init ()
         elif a == 2:
             self.second_chance_init ()
         elif a == 3:
@@ -61,11 +64,9 @@ class Pages:
     def reset_r (self):
         self.r = bitarray ('0') * (self.size + 1)
 
-    def optimal_init (self, timeline):
-        self.optimal_counter = [0] * self.size
-        for proc in timeline:
-            for ac in proc.access[0]:
-                self.optimal_counter[self.decode (proc.base, ac)] += 1
+    def optimal_init (self):
+        size = int (self.physical.size / self.physical.p)
+        self.label = [(self.size, math.inf)] * size
 
     def second_chance_init (self):
         size = int (self.physical.size / self.physical.p)
@@ -87,8 +88,22 @@ class Pages:
         for i in range (size):
             self.page_counter.append ((self.size, 0))
 
-    def optimal (self):
-        pass
+    def optimal (self, proc):
+        n_page = self.decode (proc.base, proc.next_pos ())
+        size = int (self.physical.size / self.physical.p)
+        opt = -1
+        frame = -1
+        for i in range (size):
+            page, label = self.label[i]
+            if label > opt:
+                opt = label
+                frame = i
+        page, label = self.label[frame]
+        self.present[page] = 0 
+        self.r[page] = 0
+        self.present[n_page] = 1
+        self.physical.write (frame * self.p, self.p, proc.pid)
+        self.label[frame] = (n_page, proc.next_next_time ())
 
     def second_chance (self, proc):
         n_page = self.decode (proc.base, proc.next_pos ())
@@ -128,7 +143,7 @@ class Pages:
     def lru (self, proc):
         n_page = self.decode (proc.base, proc.next_pos ())
         size = int (self.physical.size / self.physical.p)
-        best = (1 << (8 * ut.INT_BYTES))
+        best = math.inf 
         frame = -1
         for i in range (size):
             page, counter = self.page_counter[i]

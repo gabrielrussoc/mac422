@@ -1,8 +1,9 @@
 import heapq
+import math
 
 # Variaveis globais
 INT_BYTES = 4
-DEBUG = 1
+DEBUG = False
 
 def debug (s):
     if DEBUG:
@@ -38,7 +39,15 @@ class Process:
     # Devolve o proximo instante que ocorrera um acesso
     def next_time (self):
         return self.access[1][self.access_it]
-
+    
+    # Devolve o instante futuro ao instante do proximo acesso
+    # Caso nao exista, devolve infinito
+    # (algoritmo optimal, necessita de informacoes futuras)
+    def next_next_time (self):
+        if self.access_it + 1 < len (self.access[1]):
+            return self.access[1][self.access_it + 1]
+        else:
+            return math.inf
 
 # Heap de processos ordenados em relacao ao tempo de acesso de memoria
 class ProcessQueue:
