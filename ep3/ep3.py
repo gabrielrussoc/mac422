@@ -1,5 +1,8 @@
 #!/usr/local/bin/python3
 import execution as ex
+import readline
+
+readline.parse_and_bind('tab: complete')
 
 f = None
 s = None
@@ -15,32 +18,25 @@ while True:
         if len (line) != 2:
             print ('Uso: carrega <arquivo>')
         else:
-            print ('Carregando arquivo: ' + line[1])
-            f = open (line[1])
+            try:
+                f = open (line[1])
+            except FileNotFoundError:
+                print ('Arquivo não encontrado!')
     elif line[0] == 'espaco':
         if len (line) != 2:
-            print ('Uso: espaco <num>')
+            print ('Uso: espaco <algoritmo>')
         else:
             e = line[1]
-            print ('Algorimo de espaco:' + line[1])
     elif line[0] == 'substitui':
         if len (line) != 2:
-            print ('Uso: substitui <num>')
+            print ('Uso: substitui <algoritmo>')
         else:
             s = line[1]
-            print ('Algoritmo de substituicao:' + line[1])
     elif line[0] == 'executa':
         if len (line) != 2:
             print ('Uso: executa <intervalo>')
-        elif f is None:
-            print ('Erro: Arquivo de entrada nao definido')
-        elif e is None:
-            print ('Erro: Algoritmo de espaco nao definido')
-        elif s is None:
-            print ('Erro: Algoritmo de substituicao nao definido')
         else:
             it = line[1]
-            print ('Executa a simulacao e imprime intervalo:' + line[1])
             ex.run (f, int (e), int (s), int (it))
     else:
         print ('Comando nao encontrado')
