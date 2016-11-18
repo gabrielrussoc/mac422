@@ -3,8 +3,8 @@ from pages import Pages
 import utility as ut
 import math
 
-# Recebe um arquivo de trace, trace, e devolve um vetor com
-# todo o conteudo do arquivo
+# Recebe um arquivo de trace e devolve um vetor com
+# todos os processos do arquivo
 def load (trace):
     ret = []
     for line in trace:
@@ -75,7 +75,7 @@ def run (trace, m_alg, p_alg, inter):
         if time % zero_r == 0:
             pgt.reset_r ()
 
-        # Break case
+        # Nao ha mais acessos a memoria nem chegada de processos
         if index == len (timeline) and rq.get_size () == 0:
             break
 
