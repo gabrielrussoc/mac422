@@ -1,10 +1,13 @@
 import heapq
 import math
 
+# Modulo de funcoes e classes utilitarias
+
 # Variaveis globais
 INT_BYTES = 4
 DEBUG = False
 
+# Imprime apenas quando a variavel global DEBUG = true
 def debug (s):
     if DEBUG:
         print (s)

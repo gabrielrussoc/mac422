@@ -3,6 +3,8 @@ from pages import Pages
 import utility as ut
 import math
 
+# Modulo responsavel pela execucao e simulacao do trace e dos algoritmos
+
 # Recebe um arquivo de trace e devolve um vetor com
 # todos os processos do arquivo
 def load (trace):

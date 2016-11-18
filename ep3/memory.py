@@ -2,6 +2,8 @@ import utility as ut
 from bitarray import bitarray
 import math
 
+# Modulo responsavel pela representacao e manipulacao das memorias
+
 class Memory:
     # Construtor
     def __init__ (self, size, file, s, p):
