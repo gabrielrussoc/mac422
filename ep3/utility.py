@@ -1,5 +1,6 @@
 import heapq
 
+# Variaveis globais
 INT_BYTES = 4
 DEBUG = 1
 
@@ -10,30 +11,39 @@ def debug (s):
 class Process:
     pid_count = 0
     
-    #atr eh uma lista de strings
-    #t0 nome tf b p1 t1 ... pn tn
+    # Construtor
     def __init__ (self, atr):
+        # Entrada: t0 nome tf b p1 t1 ... pn tn
+
         self.t0 = int (atr[0])
         self.pid = Process.pid_count
         self.name = atr[1]
-        Process.pid_count += 1
         self.tf = int (atr[2])
         self.base = 0
         self.size = int (atr[3])
         self.access = [[], []]
-        self.access_it = 0
         for i in range (4, len (atr), 2):
             self.access[0].append (int (atr[i]))
             self.access[1].append (int (atr[i+1]))
 
+        # Iterador do vetor de acessos
+        self.access_it = 0
+
+        Process.pid_count += 1
+
+    # Devolve a proxima posicao que sera acessada
     def next_pos (self):
         return self.access[0][self.access_it]
 
+    # Devolve o proximo instante que ocorrera um acesso
     def next_time (self):
         return self.access[1][self.access_it]
 
 
+# Heap de processos ordenados em relacao ao tempo de acesso de memoria
 class ProcessQueue:
+    
+    # Definido uma classe com o comparable entre processos desejado
     class Item:
         def __init__ (self, proc):
             self.proc = proc
@@ -48,22 +58,27 @@ class ProcessQueue:
             j = other.proc.access_it
             return self.proc.access[1][i] == other.proc.access[1][j]
 
+    # Construtor
     def __init__ (self):
         self.heap = []
         self.size = 0
 
+    # Devolve a quantidade de elementos na estrutura
     def get_size (self):
         return self.size
 
+    # Recebe um processo proc e insere-o na estrutura
     def push (self, proc):
         heapq.heappush (self.heap, self.Item (proc))
         self.size += 1
 
+    # Devolve o menor elemento da esturutra, devolve None caso ela esteja vazia
     def top (self):
         if self.size == 0:
             return None
         return self.heap[0].proc
 
+    # Deleta o menor elemento da estrutura, devolve None caso ela esteja vazia
     def pop (self):
         if self.size == 0:
             return None
@@ -73,7 +88,10 @@ class ProcessQueue:
         if proc.access_it != len (proc.access[1]):
             self.push (proc)
 
+# Heap de processos ordenados em relacao ao tempo final
 class RunningQueue:
+
+    # Definido uma classe com o comparable entre processos desejado
     class Item:
         def __init__ (self, proc):
             self.proc = proc
@@ -88,22 +106,27 @@ class RunningQueue:
             j = other.proc.tf
             return i == j
 
+    # Construtor
     def __init__ (self):
         self.heap = []
         self.size = 0
 
+    # Devolve a quantidade de elementos na estrutura
     def get_size (self):
         return self.size
 
+    # Recebe um processo proc e insere-o na estrutura
     def push (self, proc):
         heapq.heappush (self.heap, self.Item (proc))
         self.size += 1
 
+    # Devolve o menor elemento da esturutra, devolve None caso ela esteja vazia
     def top (self):
         if self.size == 0:
             return None
         return self.heap[0].proc
 
+    # Deleta o menor elemento da estrutura, devolve None caso ela esteja vazia
     def pop (self):
         if self.size == 0:
             return None

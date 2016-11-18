@@ -3,6 +3,7 @@ from bitarray import bitarray
 import math
 
 class Memory:
+    # Construtor
     def __init__ (self, size, file, s, p):
         self.size = size
         self.file = open (file, 'w+b')
@@ -12,19 +13,24 @@ class Memory:
         self.bitmap = int (size / p) * bitarray ('0')
         self.counter = -1
 
+    # Destrutor
     def __del__ (self):
         self.file.close ()
         
+    # Recebe uma posicao inicial pos, uma quantidade quantity de posicoes e um valor value. Escreve no arquivo binario 
+    # a quantidade de posicoes a partir da posicao inical o valor dado
     def write (self, pos, quantity, value):
         self.file.seek (pos * ut.INT_BYTES)
         for i in range (quantity):
             self.file.write (value.to_bytes (ut.INT_BYTES, byteorder = 'big', signed = True))
 
+    # Recebe uma posicao pos do arquivo binario e devolve o conteudo dessa posicao
     def read (self, pos):
         self.file.seek (pos * ut.INT_BYTES)
         return int.from_bytes (self.file.read (ut.INT_BYTES), byteorder = 'big', signed = True) 
 
-    #Retorna a pagina inicial do processo
+    # Recebe um processo e um codigo de um algoritmo de gerencia de espaco livre, insere o processo na memoria
+    # e devolve a pagina inicial em que ele esta contido
     def insert (self, process, algorithm):
         p_size = math.ceil (process.size / self.p)
         if algorithm == 1:
@@ -36,17 +42,22 @@ class Memory:
         else:
             return self.worst_fit (process.pid, p_size)
 
+    # Recebe um processo e remove-o da memoria, atribuindo o valor -1, no arquivo binario, 
+    # para as posicoes de memoria que ele estava contido
     def remove (self, process):
         base = process.base
         p_size = math.ceil (process.size / self.p)
         self.bitmap[base : base + p_size] = p_size * bitarray ('0') 
         self.write (base * self.p, p_size * self.p, -1)
 
+    # Imprime o estado da memoria
     def show (self):
         for i in range (0, int (self.size)):
             print (str (i) + ': ' + str (self.read (i)))
 
-    #p_size eh a quantidade de paginas do processo
+
+    # Recebe um id de um processo, pid, e o tamanho (quantidade de paginas) desse processo, p_size.
+    # Insere ele na memoria usando o algoritmo first fit e devolve a pagina inicial que o processo ocupa
     def first_fit (self, pid, p_size):
         arr = p_size * bitarray ('0')
         for i in range (len (self.bitmap) - p_size + 1):
@@ -56,6 +67,8 @@ class Memory:
                 return i
                 
     
+    # Recebe um id de um processo, pid, e o tamanho (quantidade de paginas) desse processo, p_size.
+    # Insere ele na memoria usando o algoritmo next fit e devolve a pagina inicial que o processo ocupa
     def next_fit (self, pid, p_size):
         arr = p_size * bitarray ('0')
         i = self.counter + 1
@@ -69,6 +82,8 @@ class Memory:
                 return i
             i += 1
     
+    # Recebe um id de um processo, pid, e o tamanho (quantidade de paginas) desse processo, p_size.
+    # Insere ele na memoria usando o algoritmo best fit e devolve a pagina inicial que o processo ocupa
     def best_fit (self, pid, p_size):
         best_pos = 0
         best_size = len (self.bitmap)
@@ -90,6 +105,8 @@ class Memory:
         self.bitmap[best_pos : best_pos + p_size] = p_size * bitarray ('1')
         return best_pos
     
+    # Recebe um id de um processo, pid, e o tamanho (quantidade de paginas) desse processo, p_size.
+    # Insere ele na memoria usando o algoritmo worst fit e devolve a pagina inicial que o processo ocupa
     def worst_fit (self, pid, p_size):
         worst_pos = 0
         worst_size = 0

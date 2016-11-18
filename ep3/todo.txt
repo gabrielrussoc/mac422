@@ -4,6 +4,7 @@ Devemos escrever -1 na memoria fisica?
 Melhorar o print
 Revisao geral + comentarios + codigo mais bonito
 Talvez ep3.py como executavel seja ma ideia. Dificil saber caminho do python3.
+Imprimir a memoria inteira ou blocos de s em s - Confusao do Daniel
 
 perguntar pro daniel (ja foi respondido, veja paca):
 
