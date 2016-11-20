@@ -1,3 +1,8 @@
+# EP3 de MAC0422
+# Professor Daniel Batista
+# 2016 IME - USP
+# Gabriel de Russo e Carmo 9298041
+# Victor Wichmann Raposo 9298020
 import memory
 import math
 from bitarray import bitarray
