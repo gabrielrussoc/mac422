@@ -41,7 +41,7 @@ def run (trace, m_alg, p_alg, inter):
     time = index = 0
     timeline = load (trace)
     pgt = Pages (physical, virtual, p_alg)
-    zero_r = 999
+    zero_r = 32
 
     show_pids (timeline)
 
@@ -49,7 +49,8 @@ def run (trace, m_alg, p_alg, inter):
         # Chegada de processos
         while index < len (timeline) and timeline[index].t0 == time:
             proc = timeline[index]
-            pq.push (proc)
+            if len (proc.access[0]) > 0:
+                pq.push (proc)
             rq.push (proc)
             proc.base = virtual.insert (proc, m_alg)
             index += 1
@@ -76,7 +77,7 @@ def run (trace, m_alg, p_alg, inter):
             print ('Memoria fisica')
             physical.show ()
             print (20 * '-' + '\n')
-
+        
         if time % zero_r == 0:
             pgt.reset_r ()
 
@@ -86,8 +87,5 @@ def run (trace, m_alg, p_alg, inter):
 
         time += 1
     
-    if ut.DEBUG:
-        ut.log = open ('ep3.log', 'w')
-        ut.log.write (str (ut.aloc_time) + ' ' + str (ut.page_fault_counter) + '\n')
-        ut.log.close ()
-        
+    ut.debug (str (ut.aloc_time) + ' ' + str (ut.page_fault_counter))
+
