@@ -14,6 +14,7 @@ def debug (s):
     if DEBUG:
         print (s)
 
+# Classe que repesenta processos
 class Process:
     pid_count = 0
     
