@@ -153,7 +153,7 @@ class Pages:
             if not self.r[page]:
                 # Insere
                 self.clk[self.it] = (n_page, frame)
-                self.where[page] = frame
+                self.where[n_page] = frame
                 self.physical.write (frame * self.p, self.p, proc.pid)
                 self.physical.bitmap[frame * self.p : frame * self.p + self.p] = bitarray ('1') * self.p
                 # Remove
@@ -174,7 +174,7 @@ class Pages:
         for i in range (self.frame_size):
             page, counter = self.page_counter[i]
             if counter < best:
-                counter = best
+                best = counter
                 frame = i
         page = self.page_counter[frame][0]
         self.where[page] = -1
@@ -186,7 +186,8 @@ class Pages:
 
     # Atualiza os contadores do algoritmo LRU
     def lru_update (self):
-        for i in range (frame_size):
+        ut.debug ('LRU Update!')
+        for i in range (self.frame_size):
             page, counter = self.page_counter[i]
-            self.page_counter[i] = (page, (i >> 1) + (int (self.r[page]) << ((8 * ut.INT_BYTES) - 1)))
+            self.page_counter[i] = (page, (counter >> 1) + (int (self.r[page]) << ((8 * ut.INT_BYTES) - 1)))
 
