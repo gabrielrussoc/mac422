@@ -1,4 +1,4 @@
-#!/usr/bin/zsh
+#!/bin/zsh
 
 # Parametros da linha de comando
 # Caso de teste $1
