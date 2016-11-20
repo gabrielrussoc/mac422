@@ -69,7 +69,7 @@ class Pages:
     # Remove todas as informacoes relacionadas as paginas do processo proc
     def remove (self, proc):
         p_size = math.ceil (proc.size / self.p)
-        for page in range (proc.base, proc.base + p_size, self.p):
+        for page in range (proc.base, proc.base + p_size):
             if self.where[page] != -1:
                 loc = self.where[page]
                 self.where[page] = -1
