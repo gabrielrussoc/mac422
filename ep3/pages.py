@@ -46,8 +46,7 @@ class Pages:
     # com o algoritmo determinado
     def page_fix (self, proc):
         ut.debug ('Page fault!')
-        if ut.DEBUG:
-            ut.page_fault_counter += 1
+        ut.page_fault_counter += 1
         a = self.p_alg
         if a == 1:
             self.optimal (proc)

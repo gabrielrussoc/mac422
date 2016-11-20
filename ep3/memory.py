@@ -48,8 +48,7 @@ class Memory:
         else:
             base = self.worst_fit (process.pid, p_size)
         end = time.time ()
-        if ut.DEBUG:
-            ut.aloc_time += end - start
+        ut.aloc_time += end - start
         return base
 
     # Recebe um processo e remove-o da memoria, atribuindo o valor -1, no arquivo binario, 

@@ -87,5 +87,6 @@ def run (trace, m_alg, p_alg, inter):
 
         time += 1
     
-    ut.debug (str (ut.aloc_time) + ' ' + str (ut.page_fault_counter))
+    print ('Tempo gasto alocando memória: ' + str (ut.aloc_time) + 's')
+    print ('Falhas de página: ' + str (ut.page_fault_counter))
 
