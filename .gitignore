@@ -8,3 +8,4 @@ ep2/ep2
 *.out
 *.pyc
 __pycache__
+*.log
