@@ -1,0 +1,26 @@
+Gabriel de Russo e Carmo 9298041
+Victor Wichmann Raposo 9298020
+
+Instruções sobre execução do programa
+Testado nos seguintes sistemas operacionais: Ubuntu 16.04 e no macOS 10.12
+
+Depêndencias: 
+    - Python 3.5.2 ou superior
+
+    - bitarray (Módulo do Python)
+        Em sistemas com apt-get usar o comando:
+            apt-get install python3-bitarray
+        
+        Em sistemas com pip (python package installer):
+            pip install bitarray
+
+        Para instalação manual:
+            https://pypi.python.org/pypi/bitarray/0.8.1
+
+
+Para executar o simulador:
+    python ep3.py
+
+OBSERVAÇÃO: 
+    Em alguns sistemas o executavel do Python 3 pode ser python3.
+    O executavel para o pip do Python 3 pode ser pip3.
