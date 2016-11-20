@@ -12,15 +12,14 @@ Depêndencias:
             apt-get install python3-bitarray
         
         Em sistemas com pip (python package installer):
-            pip install bitarray
+            pip3 install bitarray
 
         Para instalação manual:
             https://pypi.python.org/pypi/bitarray/0.8.1
 
-
 Para executar o simulador:
-    python ep3.py
+    python3 ep3.py
 
 OBSERVAÇÃO: 
-    Em alguns sistemas o executavel do Python 3 pode ser python3.
-    O executavel para o pip do Python 3 pode ser pip3.
+    Em alguns sistemas o executavel do Python 3 pode ser apenas python.
+    O executavel para o pip3 pode ser apenas pip.
