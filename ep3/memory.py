@@ -34,7 +34,7 @@ class Memory:
 
     # Recebe um processo e um codigo de um algoritmo de gerencia de espaco livre, insere o processo na memoria
     # e devolve a primeira que ele ocupa na memoria virtual
-    # CASO O MODO DE DEBUG ESTEJA LIGADO, ESCREVE NO ARQUIVO time.log A SOMATORIA DO TEMPO CONSUMIDO EM TODAS
+    # CASO O MODO DE DEBUG ESTEJA LIGADO, ESCREVE NO ARQUIVO ep3.log A SOMATORIA DO TEMPO CONSUMIDO EM TODAS
     # AS EXECUCOES DESSA OPERACAO
     def insert (self, process, algorithm):
         start = time.time ()
