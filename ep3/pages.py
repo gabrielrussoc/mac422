@@ -38,6 +38,8 @@ class Pages:
         page = self.decode (proc.base, pos)
         if self.where[page] == -1:
             self.page_fix (proc)
+        if self.p_alg == 1: #atualiza o rotulo do frame no optimal
+            self.optimal_update (proc)
         self.r[page] = 1
 
     # Trata o caso de page fault de um processo proc de acordo
@@ -124,7 +126,21 @@ class Pages:
         self.where[n_page] = frame
         self.physical.write (frame * self.p, self.p, proc.pid)
         self.physical.bitmap[frame * self.p : frame * self.p + self.p] = bitarray ('1') * self.p
-        self.label[frame] = (n_page, proc.next_next_time ())
+
+    # Atualiza a estrutura do optimal, isto e, atualiza o rotulo da proxima pagina que proc
+    # vai acessar. A funcao supoe que essa pagina ja esta na memoria fisica.
+    def optimal_update (self, proc):
+        i = proc.access_it + 1
+        page = self.decode (proc.base, proc.next_pos ())
+        frame = self.where[page]
+        while i < len (proc.access[0]):
+            p = proc.access[0][i]
+            t = proc.access[1][i]
+            if self.decode (proc.base, p) == page:
+                self.label[frame] = (page, t)
+                return
+            i += 1
+        self.label[frame] = (page, math.inf)
 
     # Insere a proxima pagina acessada do processo proc
     # no quadro de paginas de acordo com o algoritmo second chance
