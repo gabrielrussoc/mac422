@@ -1,4 +1,5 @@
 Testar tudo com traces bons
+Imprimir o bitmap e ajusta-lo (tem que ser de byte em byte)
 Comentar na funcao run em execution.py
 Gerador de traces (ver amiguinhos)
 Revisao geral + comentarios + codigo mais bonito
