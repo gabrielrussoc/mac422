@@ -3,10 +3,13 @@ import readline
 
 readline.parse_and_bind('tab: complete')
 
-f = None
-s = None
-e = None
-it = None
+trace = None
+alg_sub = None
+alg_esp = None
+inter = None
+
+espaco = {1: 'First fit', 2: 'Next fit', 3: 'Best fit', 4: 'Worst fit'}
+subs = {1: 'Optimal', 2: 'Second chance', 3: 'Clock', 4: 'Least Recently Used'}
 
 while True:
     line = input ('(ep3): ')
@@ -18,24 +21,28 @@ while True:
             print ('Uso: carrega <arquivo>')
         else:
             try:
-                f = open (line[1])
+                trace = open (line[1])
             except FileNotFoundError:
                 print ('Arquivo não encontrado!')
     elif line[0] == 'espaco':
         if len (line) != 2:
             print ('Uso: espaco <algoritmo>')
         else:
-            e = line[1]
+            alg_esp = int (line[1])
     elif line[0] == 'substitui':
         if len (line) != 2:
             print ('Uso: substitui <algoritmo>')
         else:
-            s = line[1]
+            alg_sub = int (line[1])
     elif line[0] == 'executa':
         if len (line) != 2:
             print ('Uso: executa <intervalo>')
         else:
-            it = line[1]
-            ex.run (f, int (e), int (s), int (it))
+            inter = int (line[1])
+            print ('Iniciando simulação...')
+            print ('Algoritmo de gerência de espaço livre: ' + str (alg_esp) + ' - ' + espaco[alg_esp])
+            print ('Algoritmo de substiução de páginas: ' + str (alg_sub) + ' - ' + subs[alg_sub])
+            ex.run (trace, alg_esp, alg_sub, inter)
     else:
         print ('Comando nao encontrado')
+
