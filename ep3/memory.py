@@ -12,8 +12,8 @@ class Memory:
         self.write (0, size, -1)
         self.s = s
         self.p = p
-        self.bitmap = int (size / p) * bitarray ('0')
-        self.counter = -1
+        self.bitmap = size * bitarray ('0')
+        self.counter = -1 #para o next fit
 
     # Destrutor
     def __del__ (self):
@@ -32,7 +32,7 @@ class Memory:
         return int.from_bytes (self.file.read (ut.INT_BYTES), byteorder = 'big', signed = True) 
 
     # Recebe um processo e um codigo de um algoritmo de gerencia de espaco livre, insere o processo na memoria
-    # e devolve a pagina inicial em que ele esta contido
+    # e devolve a primeira que ele ocupa na memoria virtual
     def insert (self, process, algorithm):
         p_size = math.ceil (process.size / self.p)
         if algorithm == 1:
@@ -47,65 +47,63 @@ class Memory:
     # Recebe um processo e remove-o da memoria, atribuindo o valor -1, no arquivo binario, 
     # para as posicoes de memoria que ele estava contido
     def remove (self, process):
-        base = process.base
-        p_size = math.ceil (process.size / self.p)
-        self.bitmap[base : base + p_size] = p_size * bitarray ('0') 
-        self.write (base * self.p, p_size * self.p, -1)
+        base = process.base * self.p #base absoluta
+        p_size = math.ceil (process.size / self.p) 
+        self.bitmap[base : base  + p_size * self.p] = p_size * self.p * bitarray ('0') 
+        self.write (base, p_size * self.p, -1)
 
-    # Imprime o estado da memoria
+    # Imprime o estado da memoria, assim como seu bitmap
     def show (self):
         for i in range (0, int (self.size)):
-            print (str (i) + ': ' + str (self.read (i)))
-
+            print (str (i) + ': ' + str (self.read (i)) + ' (' + str (self.bitmap[i]) + ')')
 
     # Recebe um id de um processo, pid, e o tamanho (quantidade de paginas) desse processo, p_size.
     # Insere ele na memoria usando o algoritmo first fit e devolve a pagina inicial que o processo ocupa
     def first_fit (self, pid, p_size):
-        arr = p_size * bitarray ('0')
-        for i in range (len (self.bitmap) - p_size + 1):
-            if self.bitmap[i : i + p_size] == arr:
-                self.write (i * self.p, p_size * self.p, pid)
-                self.bitmap[i : i + p_size] = p_size * bitarray ('1')
-                return i
-                
+        arr = p_size * self.p * bitarray ('0')
+        for i in range (0, self.size - p_size * self.p, self.p):
+            if self.bitmap[i : i + p_size * self.p] == arr:
+                self.write (i, p_size * self.p, pid)
+                self.bitmap[i : i + p_size * self.p] = p_size * self.p * bitarray ('1')
+                return int (i / self.p)
     
     # Recebe um id de um processo, pid, e o tamanho (quantidade de paginas) desse processo, p_size.
     # Insere ele na memoria usando o algoritmo next fit e devolve a pagina inicial que o processo ocupa
     def next_fit (self, pid, p_size):
-        arr = p_size * bitarray ('0')
+        arr = p_size * self.p * bitarray ('0')
         i = self.counter + 1
         while (i != self.counter):
-            if i > len (self.bitmap) - p_size:
+            if i > self.size - p_size * self.p:
                 i = 0
-            if self.bitmap[i : i + p_size] == arr:
-                self.write (i * self.p, p_size * self.p, pid)
-                self.bitmap[i : i + p_size] = p_size * bitarray ('1')
-                self.counter = i + p_size - 1
-                return i
-            i += 1
+            if self.bitmap[i : i + p_size * self.p] == arr:
+                self.write (i, p_size * self.p, pid)
+                self.bitmap[i : i + p_size * self.p] = p_size * self.p * bitarray ('1')
+                self.counter = i + p_size * self.p - 1
+                return int (i / self.p) 
+            i += self.p
     
     # Recebe um id de um processo, pid, e o tamanho (quantidade de paginas) desse processo, p_size.
     # Insere ele na memoria usando o algoritmo best fit e devolve a pagina inicial que o processo ocupa
     def best_fit (self, pid, p_size):
         best_pos = 0
-        best_size = len (self.bitmap)
+        best_size = self.size
         i = 0
         
-        for j in range (len (self.bitmap)):
+        for j in range (self.size):
             if self.bitmap[j]:
-                if j - i < best_size and j - i >= p_size:
+                if j - i < best_size and j - i >= p_size * self.p:
                     best_size = j - i
                     best_pos = i
                 i = j + 1
 
-        j = len (self.bitmap)
-        if j - i < best_size and j - i >= p_size:
+        j = self.size
+        if j - i < best_size and j - i >= p_size * self.p:
             best_size = j - i
             best_pos = i
 
-        self.write (best_pos * self.p, p_size * self.p, pid)
-        self.bitmap[best_pos : best_pos + p_size] = p_size * bitarray ('1')
-        return best_pos
+        self.write (best_pos, p_size * self.p, pid)
+        self.bitmap[best_pos : best_pos + p_size * self.p] = p_size * self.p * bitarray ('1')
+        return int (best_pos / self.p)
     
     # Recebe um id de um processo, pid, e o tamanho (quantidade de paginas) desse processo, p_size.
     # Insere ele na memoria usando o algoritmo worst fit e devolve a pagina inicial que o processo ocupa
@@ -114,19 +112,19 @@ class Memory:
         worst_size = 0
         i = 0
         
-        for j in range (len (self.bitmap)):
+        for j in range (self.size):
             if self.bitmap[j]:
-                if j - i > worst_size and j - i >= p_size:
+                if j - i > worst_size and j - i >= p_size * self.p:
                     worst_size = j - i
                     worst_pos = i
                 i = j + 1
         
-        j = len (self.bitmap)
-        if j - i > worst_size and j - i >= p_size:
+        j = self.size
+        if j - i > worst_size and j - i >= p_size * self.p:
             worst_size = j - i
             worst_pos = i
 
-        self.write (worst_pos * self.p, p_size * self.p, pid)
-        self.bitmap[worst_pos : worst_pos + p_size] = p_size * bitarray ('1')
-        return worst_pos 
+        self.write (worst_pos, p_size * self.p, pid)
+        self.bitmap[worst_pos : worst_pos + p_size * self.p] = p_size * self.p * bitarray ('1')
+        return int (worst_pos / self.p)
 
