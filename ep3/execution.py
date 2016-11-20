@@ -24,7 +24,9 @@ def show_pids (timeline):
         print (proc.name + ': ' + str (proc.pid))
     print (10 * '-' + '\n')
 
-# COMENTAR
+# Simula o arquivo de trace com algoritmo de memoria m_alg
+# e de substituicao de pagina p_alg. Imprime o status das memorias
+# na tela de acordo com o intervalo inter
 def run (trace, m_alg, p_alg, inter):
     #Entrada: total virtual s p
     a = list (map (int, trace.readline ().split ()))
