@@ -5,9 +5,9 @@ import math
 
 # Variaveis globais
 INT_BYTES = 4
-DEBUG = True
-aloc_time = 0
-page_fault_counter = 0
+DEBUG = False #modo debug
+aloc_time = 0 #contagem do tempo de alocacao
+page_fault_counter = 0 #contagem de page faults
 
 # Imprime apenas quando a variavel global DEBUG = true
 def debug (s):
@@ -29,8 +29,8 @@ class Process:
         self.size = int (atr[3])
         self.access = [[], []]
         for i in range (4, len (atr), 2):
-            self.access[0].append (int (atr[i]))
-            self.access[1].append (int (atr[i+1]))
+            self.access[0].append (int (atr[i])) # posicoes
+            self.access[1].append (int (atr[i+1])) # instantes
 
         # Iterador do vetor de acessos
         self.access_it = 0
@@ -45,15 +45,6 @@ class Process:
     def next_time (self):
         return self.access[1][self.access_it]
     
-    # Devolve o instante futuro ao instante do proximo acesso
-    # Caso nao exista, devolve infinito
-    # (algoritmo optimal, necessita de informacoes futuras)
-    def next_next_time (self):
-        if self.access_it + 1 < len (self.access[1]):
-            return self.access[1][self.access_it + 1]
-        else:
-            return math.inf
-
 # Heap de processos ordenados em relacao ao tempo de acesso de memoria
 class ProcessQueue:
     
