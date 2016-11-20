@@ -10,15 +10,19 @@ import math
 def load (trace):
     ret = []
     for line in trace:
+        if line.strip () == '':
+            continue
         ret.append (ut.Process (line.split ()))
     return ret
 
 # Recebe um vetor de processos timeline e imprime uma tabela relacionando
 # o nome do processo com seu pid
 def show_pids (timeline):
+    print ('\n' + 10 * '-')
+    print ('PROCESSO: PID\n')
     for proc in timeline:
-        print (proc.name + ' (' + str (proc.pid) + ')')
-
+        print (proc.name + ': ' + str (proc.pid))
+    print (10 * '-' + '\n')
 
 # COMENTAR
 def run (trace, m_alg, p_alg, inter):
@@ -63,13 +67,13 @@ def run (trace, m_alg, p_alg, inter):
         
         # Relatorio
         if time % inter == 0:
-            print ('Instante ' + str (time))
+            print ('Instante ' + str (time) + '\n')
             print ('Memoria virtual')
             virtual.show ()
-            print (20 * '-')
+            print ()
             print ('Memoria fisica')
             physical.show ()
-            print ()
+            print (20 * '-' + '\n')
 
         if time % zero_r == 0:
             pgt.reset_r ()
