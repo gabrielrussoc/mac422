@@ -87,7 +87,7 @@ def run (trace, m_alg, p_alg, inter):
         time += 1
     
     if ut.DEBUG:
-        ut.log = open ('time.log', 'w')
-        ut.log.write (str (ut.aloc_time) + '\n')
+        ut.log = open ('ep3.log', 'w')
+        ut.log.write (str (ut.aloc_time) + ' ' + str (ut.page_fault_counter) + '\n')
         ut.log.close ()
         
