@@ -85,4 +85,9 @@ def run (trace, m_alg, p_alg, inter):
             break
 
         time += 1
+    
+    if ut.DEBUG:
+        ut.log = open ('time.log', 'w')
+        ut.log.write (str (ut.aloc_time) + '\n')
+        ut.log.close ()
         

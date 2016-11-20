@@ -6,6 +6,7 @@ import math
 # Variaveis globais
 INT_BYTES = 4
 DEBUG = False
+aloc_time = 0
 
 # Imprime apenas quando a variavel global DEBUG = true
 def debug (s):

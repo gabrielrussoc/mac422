@@ -1,6 +1,7 @@
 import utility as ut
 from bitarray import bitarray
 import math
+import time
 
 # Modulo responsavel pela representacao e manipulacao das memorias
 
@@ -33,16 +34,23 @@ class Memory:
 
     # Recebe um processo e um codigo de um algoritmo de gerencia de espaco livre, insere o processo na memoria
     # e devolve a primeira que ele ocupa na memoria virtual
+    # CASO O MODO DE DEBUG ESTEJA LIGADO, ESCREVE NO ARQUIVO time.log A SOMATORIA DO TEMPO CONSUMIDO EM TODAS
+    # AS EXECUCOES DESSA OPERACAO
     def insert (self, process, algorithm):
+        start = time.time ()
         p_size = math.ceil (process.size / self.p)
         if algorithm == 1:
-            return self.first_fit (process.pid, p_size)
+            base = self.first_fit (process.pid, p_size)
         elif algorithm == 2:
-            return self.next_fit (process.pid, p_size)
+            base = self.next_fit (process.pid, p_size)
         elif algorithm == 3:
-            return self.best_fit (process.pid, p_size)
+            base = self.best_fit (process.pid, p_size)
         else:
-            return self.worst_fit (process.pid, p_size)
+            base = self.worst_fit (process.pid, p_size)
+        end = time.time ()
+        if ut.DEBUG:
+            ut.aloc_time += end - start
+        return base
 
     # Recebe um processo e remove-o da memoria, atribuindo o valor -1, no arquivo binario, 
     # para as posicoes de memoria que ele estava contido
