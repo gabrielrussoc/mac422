@@ -139,32 +139,3 @@ class RunningQueue:
         proc = heapq.heappop (self.heap).proc
         self.size -= 1
 
-'''unit test
-a = Process (['0', 'procA', '10', '3', '1', '3', '3', '5'])
-b = Process (['0', 'procB', '100', '3', '1', '3', '3', '1'])
-
-pq = ProcessQueue ()
-pq.push (a)
-pq.push (b)
-
-print (pid_name[pq.top ().pid])
-pq.pop ()
-print (pid_name[pq.top ().pid])
-pq.pop ()
-print (pid_name[pq.top ().pid])
-pq.pop ()
-print (pid_name[pq.top ().pid])
-pq.pop ()
-pq.pop ()
-
-print (10 * '-')
-
-rq = RunningQueue ()
-rq.push (a)
-rq.push (b)
-print (pid_name[rq.top ().pid])
-rq.pop ()
-print (pid_name[rq.top ().pid])
-rq.pop ()
-rq.pop ()
-'''
